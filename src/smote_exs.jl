@@ -13,7 +13,7 @@ function factor_cols(dat::DataFrame)
         end
     end
     indcs = find(are_factors)
-    return indcs
+    indcs
 end
 
 # @code_warntype factor_cols(d)
@@ -40,8 +40,8 @@ end
 function float_to_factor(v, levels)
     sort!(levels)
     str_vect = map(x -> levels[Int(round(x))], v)
-    out = CategoricalArray(str_vect)
-    return out
+    res = CategoricalArray(str_vect)
+    res
 end
 
 
@@ -49,17 +49,17 @@ end
 # function when it's call with MARGIN = 2.
 function rscale(X, center, scale)
     n, p = size(X)
-    out = Array{Float64, 2}(n, p)
+    res = Array{Float64, 2}(n, p)
     for i = 1:n
         for j = 1:p
-            out[i, j] = (X[i, j] - center[j])/scale[j]
+            res[i, j] = (X[i, j] - center[j])/scale[j]
         end
     end
-    out
+    res
 end
 
 
-function column_ranges{T<:Real}(X::Array{T, 2})
+function column_ranges(X::Array{T, 2}) where {T <: Real}
     p = size(X, 2)
     ranges = Array{Float64,1}(p)
 
@@ -81,7 +81,7 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
         if j ∈ factor_indcs
             T[:, j] = factor_to_float(dat[:, j])
         else
-            T[:, j] = convert(Array{Float64,1}, dat[:, j])
+            T[:, j] = convert(Array{Float64, 1}, dat[:, j])
         end
     end
 
@@ -109,20 +109,20 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
         end
 
         dd = xd.^2 * ones(p)
-        kNNs = sortperm(dd)[2:(k+1)]
+        k_nns = sortperm(dd)[2:(k+1)]
 
         for l = 1:n_exs
             neighbor = sample(1:k)
             ex = Array{Float64, 1}(p)
 
             # the attribute values of generated case
-            difs = T[kNNs[neighbor], :] - T[i, :]
+            difs = T[k_nns[neighbor], :] - T[i, :]
             xnew[(i - 1)*n_exs + l, :] = T[i, :] + rand()*difs
 
             # For each of factor variable, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                xnew[(i - 1)*n_exs + l, col] = sample(vcat(T[kNNs[neighbor], col], T[i, col]))
+                xnew[(i - 1)*n_exs + l, col] = sample(vcat(T[k_nns[neighbor], col], T[i, col]))
             end
         end
     end
@@ -147,7 +147,7 @@ end
 # the last column is the outcome (or target) variable.
 # NOTE: `pct` is the pctent of positive examples relative to total
 # sample size to be returned.
-function smote_exs{S<:Number}(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5)
+function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Real}
     if pct < 1
         warn("Percent over-sampling cannot be less than 1\n
               Setting `pct` to 1.")
@@ -182,14 +182,14 @@ function smote_exs{S<:Number}(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5)
         xd = rscale(T, T[i, :], ranges)
 
         dd = xd.^2 * ones(p)
-        kNNs = sortperm(dd)[2:(k+1)]
+        k_nns = sortperm(dd)[2:(k+1)]
 
         for l = 1:n_exs
             neighbor = sample(1:k)
             ex = Array{Float64, 1}(p)
 
             # The attribute values of generated case
-            difs = T[kNNs[neighbor], :] - T[i, :]
+            difs = T[k_nns[neighbor], :] - T[i, :]
             xnew[(i - 1)*n_exs + l, :] = T[i, :] + rand()*difs
         end
     end
@@ -209,16 +209,18 @@ end
 
 
 
-function cases_needed{T<:Real}(y::Array{T, 1})
+function cases_needed(y::Array{T, 1}) where {T <: Real}
     n_minority = count(x -> x == 1, y)
     n = length(y)
-    0.5n - n_minority
+    res = 0.5n - n_minority
+    res 
 end
 
 function pct_needed{T<:Real}(y::Array{T, 1})
     numer = cases_needed(y)
     denom = count(x -> x == 1, y)
-    return 100 * numer/denom
+    res = 100 * numer/denom
+    res
 end
 
 
