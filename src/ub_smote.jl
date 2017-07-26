@@ -1,5 +1,5 @@
 
-function ub_smote{S<:Real}(X::Array{S, 2}, y, pct_over = 200, k = 5, pct_under = 200)
+function ub_smote(X::Array{S, 2}, y, pct_over = 200, k = 5, pct_under = 200) where {S <: Real}
 
     dat = hcat(X, y)
     minority_indcs = find(y .== 1.0)

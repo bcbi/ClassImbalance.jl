@@ -1,5 +1,3 @@
-# ubSmoteExs.R
-using DataFrames
 
 
 # d = readtable("./data/people.csv", makefactors = true)
@@ -29,11 +27,11 @@ function factor_to_float(v)
         val += 1.0
     end
     n = length(v)
-    out = Array{Float64, 1}(n)
+    res = Array{Float64, 1}(n)
     for i = 1:n
-        out[i] = cat_dictionary[v[i]]
+        res[i] = cat_dictionary[v[i]]
     end
-    out
+    res
 end
 
 
@@ -145,7 +143,7 @@ end
 # This version of the function is to be used when we have no factor
 # variables. And it assumes input is simply a numeric matrix, where
 # the last column is the outcome (or target) variable.
-# NOTE: `pct` is the pctent of positive examples relative to total
+# NOTE: `pct` is the percent of positive examples relative to total
 # sample size to be returned.
 function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Real}
     if pct < 1
@@ -213,7 +211,7 @@ function cases_needed(y::Array{T, 1}) where {T <: Real}
     n_minority = count(x -> x == 1, y)
     n = length(y)
     res = 0.5n - n_minority
-    res 
+    res
 end
 
 function pct_needed{T<:Real}(y::Array{T, 1})
