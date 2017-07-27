@@ -30,11 +30,12 @@ end
 
 # n_change(n, n1) = 0.5n - n1                        # give us number of new positive cases needed for balanced data
 
-function smote(X, y, k::Int)
+function smote(X, y::Array{T, 1}, k::Int) where {T <: Real}
     pct_minority = pct_needed(y)
     # println("Percent oversampling: $pct_minority")
     n = length(y)
-    n1 = count(x -> x == 1.0, y)
+    pos_val = one(T)
+    n1 = count(z -> z == pos_val, y)
     needed = n - (n1 + n1*(pct_minority/100))
     # println("Needed: $needed")
     pct_majority = needed/(n1 * pct_minority/100) * 100

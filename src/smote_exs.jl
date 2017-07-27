@@ -180,10 +180,12 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
         xd = rscale(T, T[i, :], ranges)
 
         dd = xd.^2 * ones(p)
-        k_nns = sortperm(dd)[2:(k+1)]
+        last_idx = (length(dd) + 1 ≤ k) ? (k+1) : length(dd)        # HACK: Find out why `dd` is sometimes less than k+1
+        k_nns = sortperm(dd)[2:last_idx]
 
         for l = 1:n_exs
-            neighbor = sample(1:k)
+            n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
+            neighbor = sample(1:n_neighbors)
             ex = Array{Float64, 1}(p)
 
             # The attribute values of generated case
@@ -207,14 +209,15 @@ end
 
 
 
-function cases_needed(y::Array{T, 1}) where {T <: Real}
-    n_minority = count(x -> x == 1, y)
+function cases_needed(y::Array{T, 1}, prop = 0.5) where {T <: Real}
+    pos_val = one(T)
+    n_minority = count(x -> x == pos_val, y)
     n = length(y)
-    res = 0.5n - n_minority
+    res = round(Int, (prop * n) - n_minority)
     res
 end
 
-function pct_needed{T<:Real}(y::Array{T, 1})
+function pct_needed(y::Array{T, 1}, prop) where {T <: Real}
     numer = cases_needed(y)
     denom = count(x -> x == 1, y)
     res = 100 * numer/denom
