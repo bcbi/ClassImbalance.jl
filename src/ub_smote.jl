@@ -10,7 +10,7 @@ function ub_smote(X::Array{S, 2}, y, pct_over = 200, k = 5, pct_under = 200) whe
 
     # Get the undersample of the "majority class" examples
     sel_majority = sample(majority_indcs,
-                          round(Int, (pct_under/100) * size(new_exs, 1)),
+                          floor(Int, (pct_under/100) * size(new_exs, 1)),
                           replace = true)
 
     # Final dataset (the undersample + the rare cases + the smoted exs)
@@ -30,7 +30,7 @@ end
 
 # n_change(n, n1) = 0.5n - n1                        # give us number of new positive cases needed for balanced data
 
-function smote(X, y::Array{T, 1}, k::Int) where {T <: Real}
+function smote(X, y::Array{T, 1}, k::Int, pct_majority, pct_minority) where {T <: Real}
     pct_minority = pct_needed(y)
     # println("Percent oversampling: $pct_minority")
     n = length(y)

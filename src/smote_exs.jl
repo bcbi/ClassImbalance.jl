@@ -161,7 +161,7 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
 
     # When pct < 100, only a percentage of cases will be SMOTEd
     if pct < 100
-        n_needed = round(Int, (pct/100)*n)
+        n_needed = floor(Int, (pct/100)*n)
         idx = sample(1:n, n_needed)
         T = T[idx, :]
         pct = 100
@@ -171,7 +171,7 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
     # display(T)
     ranges = column_ranges(T)
 
-    n_exs = round(Int, pct/100)   # num. of artificial ex for each member of T
+    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of T
     xnew = Array{Float64, 2}(n_exs*n, p)
 
     for i = 1:n
@@ -180,7 +180,13 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
         xd = rscale(T, T[i, :], ranges)
 
         dd = xd.^2 * ones(p)
-        last_idx = (length(dd) + 1 ≤ k) ? (k+1) : length(dd)        # HACK: Find out why `dd` is sometimes less than k+1
+        #last_idx = (length(dd) + 1 ≤ k) ? (k+1) : length(dd)        # HACK: Find out why `dd` is sometimes less than k+1
+        last_idx = k+1
+        # Debugging:
+        if last_idx ≠ k+1
+            warn("correction applied for k")
+        end
+
         k_nns = sortperm(dd)[2:last_idx]
 
         for l = 1:n_exs
@@ -217,8 +223,8 @@ function cases_needed(y::Array{T, 1}, prop = 0.5) where {T <: Real}
     res
 end
 
-function pct_needed(y::Array{T, 1}, prop) where {T <: Real}
-    numer = cases_needed(y)
+function pct_needed(y::Array{T, 1}, prop = 0.5) where {T <: Real}
+    numer = cases_needed(y, p)
     denom = count(x -> x == 1, y)
     res = 100 * numer/denom
     res
