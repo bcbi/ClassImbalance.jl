@@ -2,19 +2,20 @@
 
 # d = readtable("./data/people.csv", makefactors = true)
 
-function factor_cols(dat::DataFrame)
+function factor_columns(dat::DataFrame)
     p = size(dat, 2)
-    are_factors = falses(p)
+    is_factor = falses(p)
     for j = 1:p
-        if isa(dat[:, j], NullableCategoricalArray)
-            are_factors[j] = true
+        typ = eltype(dat[:, j])
+        if !(typ <: Real)
+            is_factor[j] = true
         end
     end
-    indcs = find(are_factors)
+    indcs = find(is_factor)
     indcs
 end
 
-# @code_warntype factor_cols(d)
+# @code_warntype factor_columns(d)
 
 
 function factor_to_float(v)
@@ -44,7 +45,7 @@ end
 
 
 # This function behaves a bit like R's scale()
-# function when it's call with MARGIN = 2.
+# function when it's called with MARGIN = 2.
 function rscale(X, center, scale)
     n, p = size(X)
     res = Array{Float64, 2}(n, p)
@@ -70,16 +71,16 @@ end
 
 function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     n, m = size(dat)
-    T = Array{Float64, 2}(n, m-1)
+    dat_mat = Array{Float64, 2}(n, m-1)
 
-    # HACK: We assume outcome var is last column
-    factor_indcs = factor_cols(dat)[1:end-1]
+    # Calling function has outcome variable in last column
+    factor_indcs = factor_columns(dat)[1:end-1]
 
-    for j = 1:size(T, 2)
+    for j = 1:size(dat_mat, 2)
         if j ∈ factor_indcs
-            T[:, j] = factor_to_float(dat[:, j])
+            dat_mat[:, j] = factor_to_float(dat[:, j])
         else
-            T[:, j] = convert(Array{Float64, 1}, dat[:, j])
+            dat_mat[:, j] = convert(Array{Float64, 1}, dat[:, j])
         end
     end
 
@@ -87,20 +88,20 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     if pct < 100
         n_needed = round(Int, (pct/100)*n)
         idx = sample(1:n, n_needed)
-        T = T[idx, :]
+        dat_mat = dat_mat[idx, :]
         pct = 100
     end
-    n, p = size(T)
-    # display(T)
-    ranges = column_ranges(T)
+    n, p = size(dat_mat)
+    # display(dat_mat)
+    ranges = column_ranges(dat_mat)
 
-    n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of T
+    n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of dat_mat
     xnew = Array{Float64, 2}(n_exs*n, p)
 
     for i = 1:n
 
-        # the k nearest neighbors of case T[i, ]
-        xd = rscale(T, T[i, :], ranges)
+        # the k nearest neighbors of case dat_mat[i, ]
+        xd = rscale(dat_mat, dat_mat[i, :], ranges)
 
         for col in factor_indcs
             xd[:, col] = map(x -> x == 0.0 ? 1.0 : 0.0, xd[:, col])
@@ -114,13 +115,13 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
             ex = Array{Float64, 1}(p)
 
             # the attribute values of generated case
-            difs = T[k_nns[neighbor], :] - T[i, :]
-            xnew[(i - 1)*n_exs + l, :] = T[i, :] + rand()*difs
+            difs = dat_mat[k_nns[neighbor], :] - dat_mat[i, :]
+            xnew[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
 
-            # For each of factor variable, sample at random the original value
+            # For each of the factor variables, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                xnew[(i - 1)*n_exs + l, col] = sample(vcat(T[k_nns[neighbor], col], T[i, col]))
+                xnew[(i - 1)*n_exs + l, col] = sample(vcat(dat_mat[k_nns[neighbor], col], dat_mat[i, col]))
             end
         end
     end
@@ -147,37 +148,36 @@ end
 # sample size to be returned.
 function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Real}
     if pct < 1
-        warn("Percent over-sampling cannot be less than 1\n
+        warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
         pct = 1
     end
 
     n, m = size(dat)
-    T = Array{Float64, 2}(n, m-1)
+    dat_mat = Array{Float64, 2}(n, m-1)
 
-    for j = 1:size(T, 2)
-        T[:, j] = convert(Array{Float64,1}, dat[:, j])
+    for j = 1:size(dat_mat, 2)
+        dat_mat[:, j] = convert(Array{Float64,1}, dat[:, j])
     end
 
     # When pct < 100, only a percentage of cases will be SMOTEd
     if pct < 100
         n_needed = floor(Int, (pct/100)*n)
         idx = sample(1:n, n_needed)
-        T = T[idx, :]
+        dat_mat = dat_mat[idx, :]
         pct = 100
     end
 
-    n, p = size(T)
-    # display(T)
-    ranges = column_ranges(T)
+    n, p = size(dat_mat)
+    ranges = column_ranges(dat_mat)
 
-    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of T
+    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of dat_mat
     xnew = Array{Float64, 2}(n_exs*n, p)
 
     for i = 1:n
 
-        # The k nearest neighbors of case T[i, ]
-        xd = rscale(T, T[i, :], ranges)
+        # The k nearest neighbors of case dat_mat[i, ]
+        xd = rscale(dat_mat, dat_mat[i, :], ranges)
 
         dd = xd.^2 * ones(p)
         #last_idx = (length(dd) + 1 ≤ k) ? (k+1) : length(dd)        # HACK: Find out why `dd` is sometimes less than k+1
@@ -194,9 +194,9 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
             neighbor = sample(1:n_neighbors)
             ex = Array{Float64, 1}(p)
 
-            # The attribute values of generated case
-            difs = T[k_nns[neighbor], :] - T[i, :]
-            xnew[(i - 1)*n_exs + l, :] = T[i, :] + rand()*difs
+            # dat_mathe attribute values of generated case
+            difs = dat_mat[k_nns[neighbor], :] - dat_mat[i, :]
+            xnew[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
         end
     end
     # Find what the minority class is in outcome
