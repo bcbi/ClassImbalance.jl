@@ -66,6 +66,7 @@ function smote_counts_r(sim_conditions)
     return y2_counts_r
 end
 
+
 function smote_comparison(sim_conditions)
     # Comparing to output from SMOTE() in the DMwR package
     X = simdata(sim_conditions)
