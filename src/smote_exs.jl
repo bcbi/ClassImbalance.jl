@@ -180,11 +180,11 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
         xd = rscale(dat_mat, dat_mat[i, :], ranges)
 
         dd = xd.^2 * ones(p)
-        #last_idx = (length(dd) + 1 ≤ k) ? (k+1) : length(dd)        # HACK: Find out why `dd` is sometimes less than k+1
-        last_idx = k+1
+        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k+1)         # HACK: Find out why `dd` is sometimes less than k+1
+        #last_idx = k+1
         # Debugging:
-        if last_idx ≠ k+1
-            warn("correction applied for k")
+        if last_idx < k+1
+            warn("Constraint applied for (k + 1): $(k+1), and last_idx: $last_idx ")
         end
 
         k_nns = sortperm(dd)[2:last_idx]
