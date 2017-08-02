@@ -9,11 +9,12 @@ include("../src/ub_smote.jl")
 
 
 function simulation_conditions()
-    conds = Dict()
+    conds = Dict{Symbol, Int}()
     conds[:n] = rand(100:2000)
     conds[:pct_over] = rand(100:1000)
     conds[:pct_under] = rand(100:1000)
-    conds[:n_majority] = round(Int, 0.9 * conds[:n])
+    prop_majority = rand(linspace(0.5, 0.99, 100))
+    conds[:n_majority] = round(Int, prop_majority * conds[:n])
     conds[:n_minority] = conds[:n] - conds[:n_majority]
     return conds
 end
@@ -73,11 +74,11 @@ function smote_comparison(sim_conditions)
     y2_counts = sort(smote_counts_jl(sim_conditions))
     y2_counts_r = sort(smote_counts_r(sim_conditions))
 
-    display(y2_counts_r)
-    display(y2_counts)
+    # display(y2_counts_r)
+    # display(y2_counts)
 
     if !(y2_counts_r == y2_counts)
-        warn("n: $sim_conditions[:n] \npct_over: $sim_conditions[:pct_over] \npct_under: $sim_conditions[:pct_under]")
+        warn("n: $(sim_conditions[:n]) \npct_over: $(sim_conditions[:pct_over]) \npct_under: $(sim_conditions[:pct_under])")
         # failed_comp = vcat(failed_comp, [n, pct_over, pct_under]')
     end
 end
