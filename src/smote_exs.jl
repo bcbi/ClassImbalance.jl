@@ -108,10 +108,17 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
         end
 
         dd = xd.^2 * ones(p)
-        k_nns = sortperm(dd)[2:(k+1)]
+        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k+1)         # HACK: Find out why `dd` is sometimes less than k+1
+        #last_idx = k+1
+        # Debugging:
+        if last_idx < k+1
+            warn("Constraint applied for (k + 1): $(k+1), and last_idx: $last_idx ")
+        end
+        k_nns = sortperm(dd)[2:last_idx]
 
         for l = 1:n_exs
-            neighbor = sample(1:k)
+            n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
+            neighbor = sample(1:n_neighbors)
             ex = Array{Float64, 1}(p)
 
             # the attribute values of generated case
