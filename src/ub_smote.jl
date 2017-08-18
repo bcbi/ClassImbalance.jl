@@ -28,18 +28,28 @@ end
 
 # n_change(n, n1) = 0.5n - n1                        # give us number of new positive cases needed for balanced data
 
-function smote(X, y; k::Int, under::T, pct_minority::T) where {T <: AbstractFloat}
-    pct_minority = pct_needed(y)
-    # println("Percent oversampling: $pct_minority")
+
+"""
+    smote(X, y, k, under, over)
+This function implements the SMOTE algorithm for generating synthetic
+cases to re-balance the proportion of positive and negative observations.
+The `under` and `over` parameters control the proportion of under-sampling
+of the majority class and the proportion of over-sampling the minority class.
+The value of `k` allows us determine who is considered a "neighbor" when
+generating synthetic cases. 
+"""
+function smote(X, y; k::Int, under::T, over::T) where {T <: AbstractFloat}
+    over = pct_needed(y)
+    # println("Percent oversampling: $over")
     n = length(y)
     pos_val = one(T)
     n1 = count(z -> z == pos_val, y)
-    needed = n - (n1 + n1*(pct_minority/100))
+    needed = n - (n1 + n1*(over/100))
     # println("Needed: $needed")
-    under = needed/(n1 * pct_minority/100) * 100
+    under = needed/(n1 * over/100) * 100
 
     # println("Percent undersampling: $under")
-    X_new, y_new = ub_smote(X, y, pct_minority, k, under)
+    X_new, y_new = ub_smote(X, y, over, k, under)
     return (X_new, y_new)
 end
 
