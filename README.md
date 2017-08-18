@@ -14,17 +14,11 @@ julia> Pkg.clone("https://github.com/bcbi/ClassImbalance.jl.git")
 
 ## SMOTE Example
 ```julia
-julia> n_majority = 180
+julia> using ClassImbalance
 
-julia> n_minority = 20
+julia> y = vcat(zeros(20), ones(180))
 
-julia> n = n_minority + n_majority
-
-julia> X_tmp = rand(n, 10)
-
-julia> y = vcat(zeros(n_majority), ones(n_minority))
-
-julia> X = hcat(X_tmp, y)
+julia> X = hcat(rand(200, 10), y)
 
 julia> X2, y2 = smote(X, y, k = 5, over = 0.3, under = 0.2)
 ```
