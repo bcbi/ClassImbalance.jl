@@ -36,9 +36,9 @@ cases to re-balance the proportion of positive and negative observations.
 The `under` and `over` parameters control the proportion of under-sampling
 of the majority class and the proportion of over-sampling the minority class.
 The value of `k` allows us determine who is considered a "neighbor" when
-generating synthetic cases. 
+generating synthetic cases.
 """
-function smote(X, y; k::Int, under::T, over::T) where {T <: AbstractFloat}
+function smote(X, y; k::Int = 5, under::T = 0.2, over::T = 0.3) where {T <: AbstractFloat}
     over = pct_needed(y)
     # println("Percent oversampling: $over")
     n = length(y)
