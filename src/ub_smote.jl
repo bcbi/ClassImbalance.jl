@@ -29,6 +29,8 @@ end
 # n_change(n, n1) = 0.5n - n1                        # give us number of new positive cases needed for balanced data
 
 
+
+
 """
     smote(X, y, k, under, over)
 This function implements the SMOTE algorithm for generating synthetic
@@ -52,6 +54,8 @@ function smote(X, y; k::Int = 5, under::T = 50, over::T = 200) where {T <: Integ
     X_new, y_new = ub_smote(X, y, over, k, under)
     return (X_new, y_new)
 end
+
+
 
 # n = 120
 # n0 = 60
