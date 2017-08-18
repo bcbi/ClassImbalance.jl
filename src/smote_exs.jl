@@ -231,7 +231,7 @@ function cases_needed(y::Array{T, 1}, prop = 0.5) where {T <: Real}
 end
 
 function pct_needed(y::Array{T, 1}, prop = 0.5) where {T <: Real}
-    numer = cases_needed(y, p)
+    numer = cases_needed(y, prop)
     denom = count(x -> x == 1, y)
     res = 100 * numer/denom
     res
