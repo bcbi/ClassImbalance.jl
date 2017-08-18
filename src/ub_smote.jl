@@ -38,7 +38,7 @@ of the majority class and the proportion of over-sampling the minority class.
 The value of `k` allows us determine who is considered a "neighbor" when
 generating synthetic cases.
 """
-function smote(X, y; k::Int = 5, under::T = 0.2, over::T = 0.3) where {T <: AbstractFloat}
+function smote(X, y; k::Int = 5, under::T = 50, over::T = 200) where {T <: Integer}
     over = pct_needed(y)
     # println("Percent oversampling: $over")
     n = length(y)
