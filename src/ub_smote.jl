@@ -13,7 +13,7 @@ function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
     sel_majority = sample(majority_indcs, n_majority, replace = true)
 
     # Final dataset (the undersample + the rare cases + the smoted exs)
-    newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)
+    #newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)
 
 
     # Shuffle the order of instances
