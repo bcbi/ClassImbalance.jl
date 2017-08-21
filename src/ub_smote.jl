@@ -41,14 +41,14 @@ The value of `k` allows us determine who is considered a "neighbor" when
 generating synthetic cases.
 """
 function smote(X, y; k = 5, under = 50, over = 200)
-    over = pct_needed(y)
-    # println("Percent oversampling: $over")
-    n = length(y)
-    pos_val = one(eltype(y))
-    n1 = count(z -> z == pos_val, y)
-    needed = n - (n1 + n1*(over/100))
-    # println("Needed: $needed")
-    under = needed/(n1 * over/100) * 100
+    # over = pct_needed(y)
+    # # println("Percent oversampling: $over")
+    # n = length(y)
+    # pos_val = one(eltype(y))
+    # n1 = count(z -> z == pos_val, y)
+    # needed = n - (n1 + n1*(over/100))
+    # # println("Needed: $needed")
+    # under = needed/(n1 * over/100) * 100
 
     # println("Percent undersampling: $under")
     X_new, y_new = ub_smote(X, y, over, k, under)
