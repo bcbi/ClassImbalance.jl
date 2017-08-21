@@ -20,5 +20,5 @@ julia> y = vcat(zeros(20), ones(180))
 
 julia> X = hcat(rand(200, 10), y)
 
-julia> X2, y2 = smote(X, y, k = 5, under = 0.3, over = 0.4)
+julia> X2, y2 = smote(X, y, k = 5, pct_under = 100, pct_over = 200)
 ```
