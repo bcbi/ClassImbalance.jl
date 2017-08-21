@@ -28,7 +28,7 @@ function factor_to_float(v)
         val += 1.0
     end
     n = length(v)
-    res = Array{Float64, 1}(n)
+    res = zeros(n)
     for i = 1:n
         res[i] = cat_dictionary[v[i]]
     end
@@ -48,7 +48,7 @@ end
 # function when it's called with MARGIN = 2.
 function rscale(X, center, scale)
     n, p = size(X)
-    res = Array{Float64, 2}(n, p)
+    res = zeros(n, p)
     for i = 1:n
         for j = 1:p
             res[i, j] = (X[i, j] - center[j])/scale[j]
@@ -60,7 +60,7 @@ end
 
 function column_ranges(X::Array{T, 2}) where {T <: Real}
     p = size(X, 2)
-    ranges = Array{Float64,1}(p)
+    ranges = zeros(p)
 
     for j = 1:p
         ranges[j] = maximum(X[:, j]) - minimum(X[:, j])
@@ -69,46 +69,52 @@ function column_ranges(X::Array{T, 2}) where {T <: Real}
 end
 
 
-function smote_obs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
-    n, m = size(dat)
-    X_mat = Array{Float64, 2}(n, m-1)
+function smote_obs(dat::DataFrame, pct = 200, k = 5)
+    if pct < 1
+        warn("Percent over-sampling cannot be less than 1.\n
+              Setting `pct` to 1.")
+        pct = 1
+    end
+
+    n, p = size(dat)
+
+    # When pct < 100, only a percentage of cases will be SMOTEd
+    if pct < 100
+        n_needed = floor(Int, (pct/100) * n)
+        indcs = sample(1:n, n_needed)
+        X = X[indcs, :]
+        pct = 100
+    end
 
     # Calling function has outcome variable in last column
-    factor_indcs = factor_columns(dat)[1:end-1]
+    factor_indcs = factor_columns(dat)
 
-    for j = 1:size(X_mat, 2)
+    X = zeros(n, p)
+
+    for j = 1:p
         if j ∈ factor_indcs
-            X_mat[:, j] = factor_to_float(dat[:, j])
+            X[:, j] = factor_to_float(dat[:, j])
         else
-            X_mat[:, j] = convert(Array{Float64, 1}, dat[:, j])
+            X[:, j] = convert(Array{Float64, 1}, dat[:, j])
         end
     end
 
-    # when pct < 100, only a percentage of cases will be SMOTEd
-    if pct < 100
-        n_needed = round(Int, (pct/100)*n)
-        idx = sample(1:n, n_needed)
-        X_mat = dat_mat[idx, :]
-        pct = 100
-    end
-    n, p = size(dat_mat)
-    # display(dat_mat)
-    ranges = column_ranges(dat_mat)
+    ranges = column_ranges(X)
 
-    n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of dat_mat
-    X_new = Array{Float64, 2}(n_exs*n, p)
+    n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
+    X_new = zeros(n_exs * n, p)
 
     for i = 1:n
 
-        # the k nearest neighbors of case dat_mat[i, ]
-        xd = rscale(dat_mat, dat_mat[i, :], ranges)
+        # the k nearest neighbors of case X[i, ]
+        xd = rscale(X, X[i, :], ranges)
 
         for col in factor_indcs
             xd[:, col] = map(x -> x == 0.0 ? 1.0 : 0.0, xd[:, col])
         end
 
         dd = xd.^2 * ones(p)
-        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k+1)         # HACK: Find out why `dd` is sometimes less than k+1
+        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k + 1)         # HACK: Find out why `dd` is sometimes less than k+1
         #last_idx = k+1
         # Debugging:
         if last_idx < k+1
@@ -119,31 +125,31 @@ function smote_obs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
         for l = 1:n_exs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
-            ex = Array{Float64, 1}(p)
+            ex = zeros(p)
 
             # the attribute values of generated case
-            difs = dat_mat[k_nns[neighbor], :] - dat_mat[i, :]
-            X_new[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
+            difs = X[k_nns[neighbor], :] - X[i, :]
+            X_new[(i - 1) * n_exs + l, :] = X[i, :] + rand() * difs
 
             # For each of the factor variables, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                X_new[(i - 1)*n_exs + l, col] = sample(vcat(dat_mat[k_nns[neighbor], col], dat_mat[i, col]))
+                X_new[(i - 1) * n_exs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
             end
         end
     end
 
-    new_cases = DataFrame()
+    X_synth = T()
     for j = 1:p
         if j ∈ factor_indcs
-            new_cases[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
+            X_synth[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
         else
-            new_cases[:, j] = X_new[:, j]
+            X_synth[:, j] = X_new[:, j]
         end
     end
     yval = String(dat[1, tgt].value)
-    new_cases[:, tgt] = CategoricalArray(fill(yval, n_exs*n))
-    return new_cases
+    X_synth[:, tgt] = CategoricalArray(fill(yval, n_exs*n))
+    return X_synth
 end
 
 
@@ -193,7 +199,7 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
         for l = 1:n_exs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
-            ex = Array{Float64, 1}(p)
+            # ex = Array{Float64, 1}(p)
 
             # Xhe attribute values of generated case
             difs = X[k_nns[neighbor], :] - X[i, :]

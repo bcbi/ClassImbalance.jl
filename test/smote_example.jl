@@ -32,7 +32,7 @@ function smote_counts_jl(sim_conditions)
     X = simdata(sim_conditions)
     pct_over = sim_conditions[:pct_over]
     pct_under = sim_conditions[:pct_under]
-    X2, y2 = ub_smote(X[:, 1:10], X[:, 11], pct_over, 5, pct_under)
+    X2, y2 = _smote(X[:, 1:10], X[:, 11], 5, pct_over, pct_under)
     y2_counts = collect(values(countmap(y2)))
     return y2_counts
 end
