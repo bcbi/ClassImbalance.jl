@@ -1,26 +1,29 @@
 
-function ub_smote(X, y, pct_over = 200, k = 5, pct_under = 200)
-    dat = hcat(X, y)
+function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
     minority_indcs = find(y .== one(typ))
-    n, p = size(dat)
+    n, p = size(X)
 
-    new_exs = smote_exs(dat[minority_indcs, :], p, pct_over, k)
+    X_synthetic = smote_exs(X[minority_indcs, :], pct_over, k)
+    n_synthetic = size(X_synthetic, 1)
     majority_indcs = setdiff(1:size(X, 1), minority_indcs)
 
     # Get the undersample of the "majority class" examples
-    n_majority = floor(Int, (pct_under/100) * size(new_exs, 1))
+    n_majority = floor(Int, (pct_under/100) * n_synthetic)
     sel_majority = sample(majority_indcs, n_majority, replace = true)
 
     # Final dataset (the undersample + the rare cases + the smoted exs)
-    newdata = vcat(dat[sel_majority, :], dat[minority_indcs, :], new_exs)
-    n_new = size(newdata, 1)
+    newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)
+
 
     # Shuffle the order of instances
-    newdata = newdata[shuffle(1:n_new), :]
-    X_new = newdata[:, 1:(end-1)]
-    y_new = newdata[:, end]
+    X_new = vcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
+    y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic)
 
+    n_new = size(X_new, 1)
+    indcs = shuffle(1:n_new)
+    X_new = X_new[indcs, :]
+    y_new = y_new[indsc]
     return (X_new, y_new)
 end
 
@@ -37,7 +40,7 @@ This function implements the SMOTE algorithm for generating synthetic
 cases to re-balance the proportion of positive and negative observations.
 The `pct_under` and `pct_over` parameters control the proportion of under-sampling
 of the majority class and the proportion of over-sampling the minority class.
-Note that `pct_under` controls undersampling by selecting pct_under/100 observations 
+Note that `pct_under` controls undersampling by selecting pct_under/100 observations
 for each _newly created_ minority class observation. The value of `k` allows
 us determine who is considered a "neighbor" when generating synthetic cases.
 """
@@ -52,7 +55,7 @@ function smote(X, y; k = 5, pct_under = 50, pct_over = 200)
     # under = needed/(n1 * over/100) * 100
 
     # println("Percent undersampling: $under")
-    X_new, y_new = ub_smote(X, y, pct_over, k, pct_under)
+    X_new, y_new = _smote(X, y, k, pct_over, pct_under)
     return (X_new, y_new)
 end
 

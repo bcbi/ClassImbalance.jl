@@ -71,16 +71,16 @@ end
 
 function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     n, m = size(dat)
-    dat_mat = Array{Float64, 2}(n, m-1)
+    X_mat = Array{Float64, 2}(n, m-1)
 
     # Calling function has outcome variable in last column
     factor_indcs = factor_columns(dat)[1:end-1]
 
-    for j = 1:size(dat_mat, 2)
+    for j = 1:size(X_mat, 2)
         if j ∈ factor_indcs
-            dat_mat[:, j] = factor_to_float(dat[:, j])
+            X_mat[:, j] = factor_to_float(dat[:, j])
         else
-            dat_mat[:, j] = convert(Array{Float64, 1}, dat[:, j])
+            X_mat[:, j] = convert(Array{Float64, 1}, dat[:, j])
         end
     end
 
@@ -88,7 +88,7 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     if pct < 100
         n_needed = round(Int, (pct/100)*n)
         idx = sample(1:n, n_needed)
-        dat_mat = dat_mat[idx, :]
+        X_mat = dat_mat[idx, :]
         pct = 100
     end
     n, p = size(dat_mat)
@@ -96,7 +96,7 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     ranges = column_ranges(dat_mat)
 
     n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of dat_mat
-    xnew = Array{Float64, 2}(n_exs*n, p)
+    X_new = Array{Float64, 2}(n_exs*n, p)
 
     for i = 1:n
 
@@ -123,12 +123,12 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
 
             # the attribute values of generated case
             difs = dat_mat[k_nns[neighbor], :] - dat_mat[i, :]
-            xnew[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
+            X_new[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
 
             # For each of the factor variables, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                xnew[(i - 1)*n_exs + l, col] = sample(vcat(dat_mat[k_nns[neighbor], col], dat_mat[i, col]))
+                X_new[(i - 1)*n_exs + l, col] = sample(vcat(dat_mat[k_nns[neighbor], col], dat_mat[i, col]))
             end
         end
     end
@@ -136,9 +136,9 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     new_cases = DataFrame()
     for j = 1:p
         if j ∈ factor_indcs
-            new_cases[:, j] = float_to_factor(xnew[:, j], levels(dat[:, j]))
+            new_cases[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
         else
-            new_cases[:, j] = xnew[:, j]
+            new_cases[:, j] = X_new[:, j]
         end
     end
     yval = String(dat[1, tgt].value)
@@ -153,45 +153,39 @@ end
 # the last column is the outcome (or target) variable.
 # NOTE: `pct` is the percent of positive examples relative to total
 # sample size to be returned.
-function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Real}
+function smote_exs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
         pct = 1
     end
 
-    n, m = size(dat)
-    dat_mat = Array{Float64, 2}(n, m-1)
-
-    for j = 1:size(dat_mat, 2)
-        dat_mat[:, j] = convert(Array{Float64,1}, dat[:, j])
-    end
+    n, p = size(X)
 
     # When pct < 100, only a percentage of cases will be SMOTEd
     if pct < 100
-        n_needed = floor(Int, (pct/100)*n)
-        idx = sample(1:n, n_needed)
-        dat_mat = dat_mat[idx, :]
+        n_needed = floor(Int, (pct/100) * n)
+        indcs = sample(1:n, n_needed)
+        X = X[indcs, :]
         pct = 100
     end
 
-    n, p = size(dat_mat)
-    ranges = column_ranges(dat_mat)
+    ranges = column_ranges(X)
 
-    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of dat_mat
-    xnew = Array{Float64, 2}(n_exs*n, p)
+    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of X
+    X_new = zeros(n_exs * n, p)
 
     for i = 1:n
 
-        # The k nearest neighbors of case dat_mat[i, ]
-        xd = rscale(dat_mat, dat_mat[i, :], ranges)
+        # The k nearest neighbors of case X[i, ]
+        xd = rscale(X, X[i, :], ranges)
 
         dd = xd.^2 * ones(p)
-        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k+1)         # HACK: Find out why `dd` is sometimes less than k+1
+        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k + 1)         # HACK: Find out why `dd` is sometimes less than k+1
         #last_idx = k+1
         # Debugging:
         if last_idx < k+1
-            warn("Constraint applied for (k + 1): $(k+1), and last_idx: $last_idx ")
+            warn("Constraint applied for (k + 1): $(k + 1), and last_idx: $last_idx ")
         end
 
         k_nns = sortperm(dd)[2:last_idx]
@@ -201,15 +195,12 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
             neighbor = sample(1:n_neighbors)
             ex = Array{Float64, 1}(p)
 
-            # dat_mathe attribute values of generated case
-            difs = dat_mat[k_nns[neighbor], :] - dat_mat[i, :]
-            xnew[(i - 1)*n_exs + l, :] = dat_mat[i, :] + rand()*difs
+            # Xhe attribute values of generated case
+            difs = X[k_nns[neighbor], :] - X[i, :]
+            X_new[(i - 1) * n_exs + l, :] = X[i, :] + rand() * difs
         end
     end
-    # Find what the minority class is in outcome
-    yval = dat[1, tgt]
-    new_cases = hcat(xnew, fill(yval, n_exs*n))
-    return new_cases
+    X_new
 end
 
 # m = 150
