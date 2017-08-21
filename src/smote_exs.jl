@@ -69,7 +69,7 @@ function column_ranges(X::Array{T, 2}) where {T <: Real}
 end
 
 
-function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
+function smote_obs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
     n, m = size(dat)
     X_mat = Array{Float64, 2}(n, m-1)
 
@@ -153,7 +153,7 @@ end
 # the last column is the outcome (or target) variable.
 # NOTE: `pct` is the percent of positive examples relative to total
 # sample size to be returned.
-function smote_exs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
+function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
@@ -208,7 +208,7 @@ end
 # y = ones(m)
 # X = hcat(X, y)
 #
-# smote_exs(X, 11)
+# smote_obs(X, 11)
 
 
 

@@ -4,7 +4,7 @@ function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
     minority_indcs = find(y .== one(typ))
     n, p = size(X)
 
-    X_synthetic = smote_exs(X[minority_indcs, :], pct_over, k)
+    X_synthetic = smote_obs(X[minority_indcs, :], pct_over, k)
     n_synthetic = size(X_synthetic, 1)
     majority_indcs = setdiff(1:size(X, 1), minority_indcs)
 
