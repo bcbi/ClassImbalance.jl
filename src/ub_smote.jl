@@ -23,7 +23,7 @@ function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
     n_new = size(X_new, 1)
     indcs = shuffle(1:n_new)
     X_new = X_new[indcs, :]
-    y_new = y_new[indsc]
+    y_new = y_new[indcs]
     return (X_new, y_new)
 end
 
