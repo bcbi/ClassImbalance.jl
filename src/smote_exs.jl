@@ -142,7 +142,7 @@ function smote_exs(dat::DataFrame, tgt::Symbol, pct = 200, k = 5)
         end
     end
     yval = String(dat[1, tgt].value)
-    new_cases[:, tgt] = CategoricalArray(repeat([yval], inner = n_exs*n))
+    new_cases[:, tgt] = CategoricalArray(fill(yval, n_exs*n))
     return new_cases
 end
 
@@ -208,7 +208,7 @@ function smote_exs(dat::Array{S, 2}, tgt::Int, pct = 200, k = 5) where {S <: Rea
     end
     # Find what the minority class is in outcome
     yval = dat[1, tgt]
-    new_cases = hcat(xnew, repeat([yval], inner = n_exs*n))
+    new_cases = hcat(xnew, fill(yval, n_exs*n))
     return new_cases
 end
 
