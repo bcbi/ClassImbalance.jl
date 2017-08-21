@@ -35,10 +35,11 @@ end
     smote(X, y, k, under, over)
 This function implements the SMOTE algorithm for generating synthetic
 cases to re-balance the proportion of positive and negative observations.
-The `under` and `over` parameters control the proportion of under-sampling
+The `pct_under` and `pct_over` parameters control the proportion of under-sampling
 of the majority class and the proportion of over-sampling the minority class.
-The value of `k` allows us determine who is considered a "neighbor" when
-generating synthetic cases.
+Note that `pct_under` controls undersampling by selecting pct_under/100 observations 
+for each _newly created_ minority class observation. The value of `k` allows
+us determine who is considered a "neighbor" when generating synthetic cases.
 """
 function smote(X, y; k = 5, pct_under = 50, pct_over = 200)
     # over = pct_needed(y)
