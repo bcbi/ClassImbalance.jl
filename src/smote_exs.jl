@@ -31,7 +31,7 @@ function matrix_to_datatable(X_new::Array{Float64, 2}, dat::DataTable, factor_co
 end
 
 
-function smote_obs(dat::DataFrame, pct = 200, k = 5)
+function smote_obs(dat::DataTable, pct = 200, k = 5)
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
