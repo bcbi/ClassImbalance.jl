@@ -1,4 +1,4 @@
-function factor_columns(dat::DataFrame)
+function factor_columns(dat::DataTable)
     p = size(dat, 2)
     is_factor = falses(p)
     for j = 1:p
