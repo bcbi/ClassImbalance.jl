@@ -2,70 +2,32 @@
 
 # d = readtable("./data/people.csv", makefactors = true)
 
-function factor_columns(dat::DataFrame)
-    p = size(dat, 2)
-    is_factor = falses(p)
-    for j = 1:p
-        typ = eltype(dat[:, j])
-        if !(typ <: Real)
-            is_factor[j] = true
-        end
-    end
-    indcs = find(is_factor)
-    indcs
-end
-
-# @code_warntype factor_columns(d)
 
 
-function factor_to_float(v)
-    unique_cats = levels(v)         # unique categories
-    sort!(unique_cats)
-    cat_dictionary = Dict{Nullable{String}, Float64}()
-    val = 1.0
-    for k in unique_cats
-        cat_dictionary[Nullable(k)] = val
-        val += 1.0
-    end
-    n = length(v)
-    res = zeros(n)
-    for i = 1:n
-        res[i] = cat_dictionary[v[i]]
-    end
-    res
-end
-
-
-function float_to_factor(v, levels)
-    sort!(levels)
-    str_vect = map(x -> levels[Int(round(x))], v)
-    res = CategoricalArray(str_vect)
-    res
-end
-
-
-# This function behaves a bit like R's scale()
-# function when it's called with MARGIN = 2.
-function rscale(X, center, scale)
-    n, p = size(X)
-    res = zeros(n, p)
-    for i = 1:n
-        for j = 1:p
-            res[i, j] = (X[i, j] - center[j])/scale[j]
-        end
-    end
-    res
-end
-
-
-function column_ranges(X::Array{T, 2}) where {T <: Real}
-    p = size(X, 2)
-    ranges = zeros(p)
+function datatable_to_matrix(dat, factor_cols, n, p)
+    X = zeros(n, p)
 
     for j = 1:p
-        ranges[j] = maximum(X[:, j]) - minimum(X[:, j])
+        if j ∈ factor_indcs
+            X[:, j] = factor_to_float(dat[:, j])
+        else
+            X[:, j] = convert(Array{Float64, 1}, dat[:, j])
+        end
     end
-    ranges
+    X
+end
+
+
+function matrix_to_datatable(X_new, dat, factor_cols)
+    X_synth = DataTable()
+    for j = 1:p
+        if j ∈ factor_indcs
+            X_synth[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
+        else
+            X_synth[:, j] = X_new[:, j]
+        end
+    end
+    X_synth
 end
 
 
@@ -89,15 +51,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
     # Calling function has outcome variable in last column
     factor_indcs = factor_columns(dat)
 
-    X = zeros(n, p)
-
-    for j = 1:p
-        if j ∈ factor_indcs
-            X[:, j] = factor_to_float(dat[:, j])
-        else
-            X[:, j] = convert(Array{Float64, 1}, dat[:, j])
-        end
-    end
+    X = datatable_to_matrix(dat, factor_indcs, n, p)
 
     ranges = column_ranges(X)
 
@@ -125,7 +79,6 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
         for l = 1:n_exs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
-            ex = zeros(p)
 
             # the attribute values of generated case
             difs = X[k_nns[neighbor], :] - X[i, :]
@@ -139,17 +92,8 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
         end
     end
 
-    X_synth = T()
-    for j = 1:p
-        if j ∈ factor_indcs
-            X_synth[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
-        else
-            X_synth[:, j] = X_new[:, j]
-        end
-    end
-    yval = String(dat[1, tgt].value)
-    X_synth[:, tgt] = CategoricalArray(fill(yval, n_exs*n))
-    return X_synth
+    X_synthetic = matrix_to_datatable(X_new, dat, factor_indcs)
+    X_synthetic
 end
 
 
@@ -199,9 +143,7 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
         for l = 1:n_exs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
-            # ex = Array{Float64, 1}(p)
 
-            # Xhe attribute values of generated case
             difs = X[k_nns[neighbor], :] - X[i, :]
             X_new[(i - 1) * n_exs + l, :] = X[i, :] + rand() * difs
         end

@@ -7,9 +7,11 @@ using Distributions
 
 export smote, rose
 
+include("utils.jl")
 include("smote_exs.jl")
 include("ub_smote.jl")
 include("rose.jl")
+
 
 
 end # module
