@@ -89,7 +89,6 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
             end
         end
     end
-
     X_newdt = matrix_to_datatable(X_new, dat, factor_indcs)
     X_newdt
 end
