@@ -1,7 +1,7 @@
 module ClassImbalance
 
 # using DataFrames
-using DataTable
+using DataTables
 using NullableArrays
 using CategoricalArrays     # NOTE: consider replacing these with pooled array
 using Distributions
