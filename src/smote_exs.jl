@@ -18,7 +18,7 @@ function datatable_to_matrix(dat, factor_cols, n, p)
 end
 
 
-function matrix_to_datatable(X_new, dat, factor_cols)
+function matrix_to_datatable(X_new::Array{Float64, 2}, dat::DataTable, factor_cols::Array{Int, 1})
     X_synth = DataTable()
     for j = 1:p
         if j ∈ factor_indcs
@@ -50,13 +50,11 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
 
     # Calling function has outcome variable in last column
     factor_indcs = factor_columns(dat)
-
     X = datatable_to_matrix(dat, factor_indcs, n, p)
 
     ranges = column_ranges(X)
-
-    n_exs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
-    X_new = zeros(n_exs * n, p)
+    n_obs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
+    X_new = zeros(n_obs * n, p)
 
     for i = 1:n
 
@@ -76,24 +74,24 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
         end
         k_nns = sortperm(dd)[2:last_idx]
 
-        for l = 1:n_exs
+        for l = 1:n_obs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
 
             # the attribute values of generated case
             difs = X[k_nns[neighbor], :] - X[i, :]
-            X_new[(i - 1) * n_exs + l, :] = X[i, :] + rand() * difs
+            X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs
 
             # For each of the factor variables, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                X_new[(i - 1) * n_exs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
+                X_new[(i - 1) * n_obs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
             end
         end
     end
 
-    X_synthetic = matrix_to_datatable(X_new, dat, factor_indcs)
-    X_synthetic
+    X_newdt = matrix_to_datatable(X_new, dat, factor_indcs)
+    X_newdt
 end
 
 
@@ -121,9 +119,8 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
     end
 
     ranges = column_ranges(X)
-
-    n_exs = floor(Int, pct/100)   # num. of artificial ex for each member of X
-    X_new = zeros(n_exs * n, p)
+    n_obs = floor(Int, pct/100)   # num. of artificial ex for each member of X
+    X_new = zeros(n_obs * n, p)
 
     for i = 1:n
 
@@ -140,12 +137,12 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
 
         k_nns = sortperm(dd)[2:last_idx]
 
-        for l = 1:n_exs
+        for l = 1:n_obs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
             neighbor = sample(1:n_neighbors)
 
             difs = X[k_nns[neighbor], :] - X[i, :]
-            X_new[(i - 1) * n_exs + l, :] = X[i, :] + rand() * difs
+            X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs
         end
     end
     X_new
