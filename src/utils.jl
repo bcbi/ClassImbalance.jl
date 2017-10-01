@@ -14,7 +14,7 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v::PooledDataArray)
+function factor_to_float(v::DataArray)
     unique_cats = DataTables.levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
