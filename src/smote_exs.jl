@@ -19,7 +19,7 @@ end
 
 
 # Convert matrix to DataFrame or DataTable object
-function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrame, factor_cols::Array{Int, 1}) where {T}
+function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrame, factor_cols::Array{Int, 1})
     X_synth = DataFrame()
     for j = 1:p
         if j ∈ factor_indcs
