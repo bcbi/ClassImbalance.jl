@@ -14,13 +14,13 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v::NullableArray)
+function factor_to_float(v::DataArray)
     unique_cats = DataTables.levels(v)         # unique categories
     sort!(unique_cats)
-    cat_dictionary = Dict{Nullable{String}, Float64}()
+    cat_dictionary = Dict{String, Float64}()
     val = 1.0
     for k in unique_cats
-        cat_dictionary[Nullable(k)] = val
+        cat_dictionary[k] = val
         val += 1.0
     end
     n = length(v)
@@ -32,17 +32,17 @@ function factor_to_float(v::NullableArray)
 end
 
 
-function float_to_factor(v::NullableArray, levels)
+function float_to_factor(v::DataArray, levels)
     sort!(levels)
     str_vect = map(x -> levels[round(Int, x)], v)
-    res = CategoricalArray(str_vect)
+    res = DataF(str_vect)
     res
 end
 
 
 
 function factor_to_float(v::DataArray)
-    unique_cats = DataFrames.levels(v)         # unique categories
+    unique_cats = levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
     val = 1.0

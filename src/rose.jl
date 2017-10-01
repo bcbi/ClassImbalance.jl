@@ -70,7 +70,7 @@ end
 
 """
     classlabel(y)
-Given a column from a DataTable, this function returns the majority/minority class label.
+Given a column from a DataFrame, this function returns the majority/minority class label.
 """
 function classlabel(y::Array{T, 1}, labeltype = :minority) where T
     count_dict = countmap(y)
@@ -91,7 +91,7 @@ end
 
 
 
-function rose(dat::DataTable, y_column::Symbol, prop::Float64 = 0.5, h_mult_maj = 1, h_mult_min = 1)
+function rose(dat::DataFrame, y_column::Symbol, prop::Float64 = 0.5, h_mult_maj = 1, h_mult_min = 1)
     majority_label = classlabel(dat[y_column], :majority)
     minority_label = classlabel(dat[y_column], :minority)
 

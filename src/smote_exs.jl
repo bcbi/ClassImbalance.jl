@@ -4,7 +4,7 @@
 
 
 # Convert DataFrame or DataTable object to matrix
-function dfdt_to_matrix(dat, factor_cols, n, p)
+function dataframe_to_matrix(dat, factor_cols, n, p)
     X = zeros(n, p)
 
     for j = 1:p
@@ -19,8 +19,8 @@ end
 
 
 # Convert matrix to DataFrame or DataTable object
-function matrix_to_dfdt(X_new::Array{Float64, 2}, dat::T, factor_cols::Array{Int, 1}) where {T}
-    X_synth = T()
+function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrame, factor_cols::Array{Int, 1}) where {T}
+    X_synth = DataFrame()
     for j = 1:p
         if j ∈ factor_indcs
             X_synth[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
@@ -31,68 +31,68 @@ function matrix_to_dfdt(X_new::Array{Float64, 2}, dat::T, factor_cols::Array{Int
     X_synth
 end
 
-
-function smote_obs(dat::DataTable, pct = 200, k = 5)
-    if pct < 1
-        warn("Percent over-sampling cannot be less than 1.\n
-              Setting `pct` to 1.")
-        pct = 1
-    end
-
-    n, p = size(dat)
-
-    # When pct < 100, only a percentage of cases will be SMOTEd
-    if pct < 100
-        n_needed = floor(Int, (pct/100) * n)
-        indcs = sample(1:n, n_needed)
-        X = X[indcs, :]
-        pct = 100
-    end
-
-    # Calling function has outcome variable in last column
-    factor_indcs = factor_columns(dat)
-    X = dfdt_to_matrix(dat, factor_indcs, n, p)
-
-    ranges = column_ranges(X)
-    n_obs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
-    X_new = zeros(n_obs * n, p)
-
-    for i = 1:n
-
-        # the k nearest neighbors of case X[i, ]
-        xd = rscale(X, X[i, :], ranges)
-
-        for col in factor_indcs
-            xd[:, col] = map(x -> x == 0.0 ? 1.0 : 0.0, xd[:, col])
-        end
-
-        dd = xd.^2 * ones(p)
-        last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k + 1)         # HACK: Find out why `dd` is sometimes less than k+1
-        #last_idx = k+1
-        # Debugging:
-        if last_idx < k+1
-            warn("Constraint applied for (k + 1): $(k+1), and last_idx: $last_idx ")
-        end
-        k_nns = sortperm(dd)[2:last_idx]
-
-        for l = 1:n_obs
-            n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
-            neighbor = sample(1:n_neighbors)
-
-            # the attribute values of generated case
-            difs = X[k_nns[neighbor], :] - X[i, :]
-            X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs
-
-            # For each of the factor variables, sample at random the original value
-            # of Person i or the value that one of Person i's nearest neighbors has.
-            for col in factor_indcs
-                X_new[(i - 1) * n_obs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
-            end
-        end
-    end
-    X_newdt = matrix_to_dfdt(X_new, dat, factor_indcs)
-    X_newdt
-end
+# DataTable version with Nullable arrays
+# function smote_obs(dat::DataTable, pct = 200, k = 5)
+#     if pct < 1
+#         warn("Percent over-sampling cannot be less than 1.\n
+#               Setting `pct` to 1.")
+#         pct = 1
+#     end
+#
+#     n, p = size(dat)
+#
+#     # When pct < 100, only a percentage of cases will be SMOTEd
+#     if pct < 100
+#         n_needed = floor(Int, (pct/100) * n)
+#         indcs = sample(1:n, n_needed)
+#         X = X[indcs, :]
+#         pct = 100
+#     end
+#
+#     # Calling function has outcome variable in last column
+#     factor_indcs = factor_columns(dat)
+#     X = dataframe_to_matrix(dat, factor_indcs, n, p)
+#
+#     ranges = column_ranges(X)
+#     n_obs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
+#     X_new = zeros(n_obs * n, p)
+#
+#     for i = 1:n
+#
+#         # the k nearest neighbors of case X[i, ]
+#         xd = rscale(X, X[i, :], ranges)
+#
+#         for col in factor_indcs
+#             xd[:, col] = map(x -> x == 0.0 ? 1.0 : 0.0, xd[:, col])
+#         end
+#
+#         dd = xd.^2 * ones(p)
+#         last_idx = (length(dd) ≤ k + 1) ? length(dd) : (k + 1)         # HACK: Find out why `dd` is sometimes less than k+1
+#         #last_idx = k+1
+#         # Debugging:
+#         if last_idx < k+1
+#             warn("Constraint applied for (k + 1): $(k+1), and last_idx: $last_idx ")
+#         end
+#         k_nns = sortperm(dd)[2:last_idx]
+#
+#         for l = 1:n_obs
+#             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
+#             neighbor = sample(1:n_neighbors)
+#
+#             # the attribute values of generated case
+#             difs = X[k_nns[neighbor], :] - X[i, :]
+#             X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs
+#
+#             # For each of the factor variables, sample at random the original value
+#             # of Person i or the value that one of Person i's nearest neighbors has.
+#             for col in factor_indcs
+#                 X_new[(i - 1) * n_obs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
+#             end
+#         end
+#     end
+#     X_newdt = matrix_to_dataframe(X_new, dat, factor_indcs)
+#     X_newdt
+# end
 
 
 
@@ -115,7 +115,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
 
     # Calling function has outcome variable in last column
     factor_indcs = factor_columns(dat)
-    X = dfdt_to_matrix(dat, factor_indcs, n, p)
+    X = dataframe_to_matrix(dat, factor_indcs, n, p)
 
     ranges = column_ranges(X)
     n_obs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
@@ -154,7 +154,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
             end
         end
     end
-    X_newdf = matrix_to_dfdt(X_new, dat, factor_indcs)
+    X_newdf = matrix_to_dataframe(X_new, dat, factor_indcs)
     X_newdf
 end
 
