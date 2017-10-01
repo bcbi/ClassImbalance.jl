@@ -17,7 +17,7 @@ function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
 
 
     # Shuffle the order of instances
-    X_new = vcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
+    X_new = hcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
     y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic))
 
     n_new = size(X_new, 1)
