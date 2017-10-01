@@ -2,7 +2,7 @@ function factor_columns(dat)
     p = size(dat, 2)
     is_factor = falses(p)
     for j = 1:p
-        if typeof(dat[:, j]) == PooledDataArray || !(eltype(dat[:, j]) <: Real)
+        if !(eltype(dat[:, j]) <: Real)
             is_factor[j] = true
         end
     end
