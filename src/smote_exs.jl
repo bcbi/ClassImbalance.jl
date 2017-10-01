@@ -4,7 +4,7 @@
 
 
 # Convert DataFrame or DataTable object to matrix
-function dataframe_to_matrix(dat, factor_cols, n, p)
+function dataframe_to_matrix(dat, factor_indcs, n, p)
     X = zeros(n, p)
 
     for j = 1:p
