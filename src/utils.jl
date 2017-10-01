@@ -1,4 +1,4 @@
-function factor_columns(dat::DataTable)
+function factor_columns(dat)
     p = size(dat, 2)
     is_factor = falses(p)
     for j = 1:p
@@ -14,7 +14,7 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v)
+function factor_to_float(v::NullableArray)
     unique_cats = levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{Nullable{String}, Float64}()
@@ -32,13 +32,39 @@ function factor_to_float(v)
 end
 
 
-function float_to_factor(v, levels)
+function float_to_factor(v::NullableArray, levels)
     sort!(levels)
     str_vect = map(x -> levels[round(Int, x)], v)
     res = CategoricalArray(str_vect)
     res
 end
 
+
+
+function factor_to_float(v::DataArray)
+    unique_cats = levels(v)         # unique categories
+    sort!(unique_cats)
+    cat_dictionary = Dict{String, Float64}()
+    val = 1.0
+    for k in unique_cats
+        cat_dictionary[k] = val
+        val += 1.0
+    end
+    n = length(v)
+    res = zeros(n)
+    for i = 1:n
+        res[i] = cat_dictionary[v[i]]
+    end
+    res
+end
+
+
+function float_to_factor(v::DataArray, levels)
+    sort!(levels)
+    str_vect = map(x -> levels[round(Int, x)], v)
+    res = DataArray(str_vect)
+    res
+end
 
 # This function behaves a bit like R's scale()
 # function when it's called with MARGIN = 2.
