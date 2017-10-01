@@ -2,8 +2,8 @@ function factor_columns(dat)
     p = size(dat, 2)
     is_factor = falses(p)
     for j = 1:p
-        typ = eltype(dat[:, j])
-        if !(typ <: Real)
+        typ = typeof(dat[:, j])
+        if typ == PooledDataArray
             is_factor[j] = true
         end
     end
@@ -14,7 +14,7 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v::DataArray)
+function factor_to_float(v::PooledDataArray)
     unique_cats = DataTables.levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
@@ -32,34 +32,7 @@ function factor_to_float(v::DataArray)
 end
 
 
-function float_to_factor(v::DataArray, levels)
-    sort!(levels)
-    str_vect = map(x -> levels[round(Int, x)], v)
-    res = DataF(str_vect)
-    res
-end
-
-
-
-function factor_to_float(v::DataArray)
-    unique_cats = levels(v)         # unique categories
-    sort!(unique_cats)
-    cat_dictionary = Dict{String, Float64}()
-    val = 1.0
-    for k in unique_cats
-        cat_dictionary[k] = val
-        val += 1.0
-    end
-    n = length(v)
-    res = zeros(n)
-    for i = 1:n
-        res[i] = cat_dictionary[v[i]]
-    end
-    res
-end
-
-
-function float_to_factor(v::DataArray, levels)
+function float_to_factor(v::Array, levels)
     sort!(levels)
     str_vect = map(x -> levels[round(Int, x)], v)
     res = DataArray(str_vect)
