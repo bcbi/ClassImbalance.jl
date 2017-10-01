@@ -7,6 +7,7 @@ function factor_columns(dat)
         end
     end
     indcs = find(is_factor)
+    warn("the factor columns are: $(showall(indcs))")
     indcs
 end
 
