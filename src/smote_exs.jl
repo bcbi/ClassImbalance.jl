@@ -97,7 +97,7 @@ end
 
 
 
-function smote_obs(dat::DataFrame, pct = 200, k = 5)
+function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names)
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
@@ -156,6 +156,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5)
         end
     end
     X_newdf = matrix_to_dataframe(X_new, dat, factor_indcs)
+    names!(X_newdf, column_names)
     X_newdf
 end
 

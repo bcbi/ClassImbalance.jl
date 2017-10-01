@@ -1,5 +1,5 @@
 
-function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
+function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
     minority_indcs = find(y .== one(typ))
     n, p = size(X)
@@ -17,7 +17,36 @@ function _smote(X, y, k = 5, pct_over = 200, pct_under = 200)
 
 
     # Shuffle the order of instances
-    X_new = hcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
+    X_new = vcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
+    y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic))
+
+    n_new = size(X_new, 1)
+    indcs = shuffle(1:n_new)
+    X_new = X_new[indcs, :]
+    y_new = y_new[indcs]
+    return (X_new, y_new)
+end
+
+
+function _smote(X::DataFrame, y, k = 5, pct_over = 200, pct_under = 200)
+    typ = eltype(y)
+    minority_indcs = find(y .== one(typ))
+    n, p = size(X)
+
+    X_synthetic = smote_obs(X[minority_indcs, :], pct_over, k, names(X))
+    n_synthetic = size(X_synthetic, 1)
+    majority_indcs = setdiff(1:size(X, 1), minority_indcs)
+
+    # Get the undersample of the "majority class" examples
+    n_majority = floor(Int, (pct_under/100) * n_synthetic)
+    sel_majority = sample(majority_indcs, n_majority, replace = true)
+
+    # Final dataset (the undersample + the rare cases + the smoted exs)
+    #newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)
+
+
+    # Shuffle the order of instances
+    X_new = vcat(X[sel_majority, :], X[minority_indcs, :], X_synthetic)  #newdata[:, 1:(end-1)]
     y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic))
 
     n_new = size(X_new, 1)
