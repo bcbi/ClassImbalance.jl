@@ -97,7 +97,7 @@ end
 
 
 
-function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names)
+function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
