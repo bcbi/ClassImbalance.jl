@@ -15,7 +15,7 @@ end
 
 
 function factor_to_float(v::NullableArray)
-    unique_cats = levels(v)         # unique categories
+    unique_cats = DataTables.levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{Nullable{String}, Float64}()
     val = 1.0
@@ -42,7 +42,7 @@ end
 
 
 function factor_to_float(v::DataArray)
-    unique_cats = levels(v)         # unique categories
+    unique_cats = DataFrames.levels(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
     val = 1.0
