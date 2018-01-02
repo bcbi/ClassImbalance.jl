@@ -1,8 +1,12 @@
+import DataFrames
+
+const RealOrMissing = Union{Missing, T} where T<:Real
+
 function factor_columns(dat)
     p = size(dat, 2)
     is_factor = falses(p)
     for j = 1:p
-        if !(eltype(dat[:, j]) <: Real)
+        if !(eltype(dat[:, j]) <: RealOrMissing)
             is_factor[j] = true
         end
     end
