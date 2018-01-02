@@ -14,8 +14,8 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v::DataArray)
-    unique_cats = levels(v)         # unique categories
+function factor_to_float(v::AbstractArray)
+    unique_cats = unique(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
     val = 1.0
