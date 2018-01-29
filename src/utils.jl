@@ -18,7 +18,7 @@ end
 # @code_warntype factor_columns(d)
 
 
-function factor_to_float(v::AbstractArray)
+function factor_to_float(v::T) where T <: AbstractArray
     unique_cats = unique(v)         # unique categories
     sort!(unique_cats)
     cat_dictionary = Dict{String, Float64}()
@@ -36,7 +36,7 @@ function factor_to_float(v::AbstractArray)
 end
 
 
-function float_to_factor(v::Array, levels)
+function float_to_factor(v::T, levels::S) where T <: AbstractArray where S <: AbstractVector
     sort!(levels)
     str_vect = map(x -> levels[round(Int, x)], v)
     res = DataArray(str_vect)
@@ -57,7 +57,7 @@ function rscale(X, center, scale)
 end
 
 
-function column_ranges(X::Array{T, 2}) where {T <: Real}
+function column_ranges(X::T) where T <: AbstractMatrix
     p = size(X, 2)
     ranges = zeros(p)
 
