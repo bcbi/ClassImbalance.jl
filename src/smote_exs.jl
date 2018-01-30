@@ -205,7 +205,14 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
 
         for l = 1:n_obs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
-            neighbor = StatsBase.sample(1:n_neighbors)
+            #thing = nothing
+	    #try
+	        #thing = convert(Array, 1:n_neighbors)
+            #catch e
+                #info(string(n_neighbors))
+		#rethrow(e)
+            #end
+            neighbor = StatsBase.sample(convert(Array, 1:n_neighbors))
 
             difs = X[k_nns[neighbor], :] - X[i, :]
             X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs

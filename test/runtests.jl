@@ -6,7 +6,7 @@ Base.Test.@testset "All Tests" begin
         include("miscellaneous.jl")
     end
     Base.Test.@testset "smote_example.jl" begin
-        #include("smote_example.jl")
+        include("smote_example.jl")
     end
     Base.Test.@testset "test_utils.jl" begin
         include("test_utils.jl")
