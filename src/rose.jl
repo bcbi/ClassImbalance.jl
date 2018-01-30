@@ -1,3 +1,4 @@
+import StatsBase
 
 function numeric_columns(dat)
     p = ncol(dat)
@@ -45,8 +46,8 @@ function rose_sampling(X, y, prop, indcs_maj, indcs_min, y_majority, y_minority,
     n_minority = sum(rand(Binomial(1, prop), n))
 	n_majority = n - n_minority
 
-	indcs_maj_new = sample(indcs_maj, n_majority, replace = true)
-	indcs_min_new = sample(indcs_min, n_minority, replace = true)
+	indcs_maj_new = StatsBase.sample(indcs_maj, n_majority, replace = true)
+	indcs_min_new = StatsBase.sample(indcs_min, n_minority, replace = true)
 
 	numeric_cols = numeric_columns(X)
 
@@ -70,7 +71,7 @@ end
 
 """
     classlabel(y)
-Given a column from a DataFrame, this function returns the majority/minority class label.
+Given a column from a DataFrames.DataFrame, this function returns the majority/minority class label.
 """
 function classlabel(y::Array{T, 1}, labeltype = :minority) where T
     count_dict = countmap(y)
@@ -91,7 +92,7 @@ end
 
 
 
-function rose(dat::DataFrame, y_column::Symbol, prop::Float64 = 0.5, h_mult_maj = 1, h_mult_min = 1)
+function rose(dat::DataFrames.DataFrame, y_column::Symbol, prop::Float64 = 0.5, h_mult_maj = 1, h_mult_min = 1)
     majority_label = classlabel(dat[y_column], :majority)
     minority_label = classlabel(dat[y_column], :minority)
 

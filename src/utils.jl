@@ -1,6 +1,6 @@
 import DataFrames
 
-const RealOrMissing = Union{Missing, T} where T<:Real
+const RealOrMissing = Union{DataFrames.Missing, T} where T<:Real
 
 function factor_columns(dat)
     p = size(dat, 2)
@@ -62,7 +62,7 @@ function column_ranges(X::T) where T <: AbstractMatrix
     ranges = zeros(p)
 
     for j = 1:p
-        ranges[j] = maximum(X[:, j]) - minimum(X[:, j])
+	ranges[j] = maximum(X[:, j]) - minimum(X[:, j])
     end
     ranges
 end
