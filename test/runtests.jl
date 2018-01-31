@@ -1,6 +1,8 @@
 import Base.Test
 import ClassImbalance
 
+srand(999) # seed the global random number generator
+
 Base.Test.@testset "All Tests" begin
     Base.Test.@testset "miscellaneous.jl" begin
         include("miscellaneous.jl")
