@@ -1,12 +1,7 @@
-using Distributions
-using DataFrames
-using RCall
-
-cd("/Users/pstey/projects_code/ClassImbalance")
-
-include("../src/smote_exs.jl")
-include("../src/ub_smote.jl")
-
+import Distributions
+import DataFrames
+import RCall
+import StatsBase
 
 function simulation_conditions()
     conds = Dict{Symbol, Int}()
@@ -32,8 +27,8 @@ function smote_counts_jl(sim_conditions)
     X = simdata(sim_conditions)
     pct_over = sim_conditions[:pct_over]
     pct_under = sim_conditions[:pct_under]
-    X2, y2 = _smote(X[:, 1:10], X[:, 11], 5, pct_over, pct_under)
-    y2_counts = collect(values(countmap(y2)))
+    X2, y2 = ClassImbalance._smote(X[:, 1:10], X[:, 11], 5, pct_over, pct_under)
+    y2_counts = collect(values(StatsBase.countmap(y2)))
     return y2_counts
 end
 
@@ -44,12 +39,12 @@ function smote_counts_r(sim_conditions)
     pct_under = sim_conditions[:pct_under]
     n_minority = sim_conditions[:n_majority]
     n_majority = sim_conditions[:n_minority]
-    @rput n
-    @rput pct_over
-    @rput pct_under
-    @rput n_minority
-    @rput n_majority
-    R"""
+    RCall.@rput n
+    RCall.@rput pct_over
+    RCall.@rput pct_under
+    RCall.@rput n_minority
+    RCall.@rput n_majority
+    RCall.R"""
         library(DMwR)
         X <- matrix(rnorm(n*10), ncol = 10)
         X <- cbind(1, X)
@@ -62,8 +57,8 @@ function smote_counts_r(sim_conditions)
         df <- data.frame(table(dat2$y))
         y2_counts_r <- array(df[, 2])
     """
-    @rget dat2
-    @rget y2_counts_r
+    RCall.@rget dat2
+    RCall.@rget y2_counts_r
     return y2_counts_r
 end
 

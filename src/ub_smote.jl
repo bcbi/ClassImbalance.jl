@@ -1,3 +1,4 @@
+import StatsBase
 
 function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
@@ -10,7 +11,7 @@ function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
 
     # Get the undersample of the "majority class" examples
     n_majority = floor(Int, (pct_under/100) * n_synthetic)
-    sel_majority = sample(majority_indcs, n_majority, replace = true)
+    sel_majority = StatsBase.sample(majority_indcs, n_majority, replace = true)
 
     # Final dataset (the undersample + the rare cases + the smoted exs)
     #newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)
@@ -28,7 +29,7 @@ function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
 end
 
 
-function _smote(X::DataFrame, y, k = 5, pct_over = 200, pct_under = 200)
+function _smote(X::DataFrames.DataFrame, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
     minority_indcs = find(y .== one(typ))
     n, p = size(X)
@@ -39,7 +40,7 @@ function _smote(X::DataFrame, y, k = 5, pct_over = 200, pct_under = 200)
 
     # Get the undersample of the "majority class" examples
     n_majority = floor(Int, (pct_under/100) * n_synthetic)
-    sel_majority = sample(majority_indcs, n_majority, replace = true)
+    sel_majority = StatsBase.sample(majority_indcs, n_majority, replace = true)
 
     # Final dataset (the undersample + the rare cases + the smoted exs)
     #newdata = vcat(X[sel_majority, :], X[minority_indcs, :], synth_obs)

@@ -1,9 +1,10 @@
-
+import DataFrames
+import StatsBase
 
 # d = readtable("./data/people.csv", makefactors = true)
 
 
-# Convert DataFrame or DataTable object to matrix
+# Convert DataFrames.DataFrame or DataTable object to matrix
 function dataframe_to_matrix(dat, factor_indcs, n, p)
     X = zeros(n, p)
 
@@ -18,9 +19,9 @@ function dataframe_to_matrix(dat, factor_indcs, n, p)
 end
 
 
-# Convert matrix to DataFrame or DataTable object
-function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrame, factor_indcs::Array{Int, 1})
-    X_synth = DataFrame()
+# Convert matrix to DataFrames.DataFrame or DataTable object
+function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrames.DataFrames.DataFrames.DataFrame, factor_indcs::Array{Int, 1})
+    X_synth = DataFrames.DataFrames.DataFrames.DataFrame()
     p = size(X_new, 2)
     for j = 1:p
         if j ∈ factor_indcs
@@ -45,7 +46,7 @@ end
 #     # When pct < 100, only a percentage of cases will be SMOTEd
 #     if pct < 100
 #         n_needed = floor(Int, (pct/100) * n)
-#         indcs = sample(1:n, n_needed)
+#         indcs = StatsBase.sample(1:n, n_needed)
 #         X = X[indcs, :]
 #         pct = 100
 #     end
@@ -78,7 +79,7 @@ end
 #
 #         for l = 1:n_obs
 #             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
-#             neighbor = sample(1:n_neighbors)
+#             neighbor = StatsBase.sample(1:n_neighbors)
 #
 #             # the attribute values of generated case
 #             difs = X[k_nns[neighbor], :] - X[i, :]
@@ -87,7 +88,7 @@ end
 #             # For each of the factor variables, sample at random the original value
 #             # of Person i or the value that one of Person i's nearest neighbors has.
 #             for col in factor_indcs
-#                 X_new[(i - 1) * n_obs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
+#                 X_new[(i - 1) * n_obs + l, col] = StatsBase.sample(vcat(X[k_nns[neighbor], col], X[i, col]))
 #             end
 #         end
 #     end
@@ -97,7 +98,7 @@ end
 
 
 
-function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
+function smote_obs(dat::DataFrames.DataFrame, pct = 200, k = 5, column_names = names(dat))
     if pct < 1
         warn("Percent over-sampling cannot be less than 1.\n
               Setting `pct` to 1.")
@@ -109,7 +110,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
     # When pct < 100, only a percentage of cases will be SMOTEd
     if pct < 100
         n_needed = floor(Int, (pct/100) * n)
-        indcs = sample(1:n, n_needed)
+        indcs = StatsBase.sample(1:n, n_needed)
         X = X[indcs, :]
         pct = 100
     end
@@ -121,7 +122,6 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
     ranges = column_ranges(X)
     n_obs = round(Int, floor(pct/100))   # num. of artificial ex for each member of X
     X_new = zeros(n_obs * n, p)
-
     for i = 1:n
 
         # the k nearest neighbors of case X[i, ]
@@ -142,7 +142,7 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
 
         for l = 1:n_obs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
-            neighbor = sample(1:n_neighbors)
+            neighbor = StatsBase.sample(1:n_neighbors)
 
             # the attribute values of generated case
             difs = X[k_nns[neighbor], :] - X[i, :]
@@ -151,12 +151,12 @@ function smote_obs(dat::DataFrame, pct = 200, k = 5, column_names = names(dat))
             # For each of the factor variables, sample at random the original value
             # of Person i or the value that one of Person i's nearest neighbors has.
             for col in factor_indcs
-                X_new[(i - 1) * n_obs + l, col] = sample(vcat(X[k_nns[neighbor], col], X[i, col]))
+                X_new[(i - 1) * n_obs + l, col] = StatsBase.sample(vcat(X[k_nns[neighbor], col], X[i, col]))
             end
         end
     end
     X_newdf = matrix_to_dataframe(X_new, dat, factor_indcs)
-    names!(X_newdf, column_names)
+    DataFrames.names!(X_newdf, column_names)
     X_newdf
 end
 
@@ -179,7 +179,7 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
     # When pct < 100, only a percentage of cases will be SMOTEd
     if pct < 100
         n_needed = floor(Int, (pct/100) * n)
-        indcs = sample(1:n, n_needed)
+        indcs = StatsBase.sample(1:n, n_needed)
         X = X[indcs, :]
         pct = 100
     end
@@ -205,7 +205,14 @@ function smote_obs(X::Array{S, 2}, pct = 200, k = 5) where {S <: Real}
 
         for l = 1:n_obs
             n_neighbors = (length(k_nns) == k) ? k : length(k_nns)
-            neighbor = sample(1:n_neighbors)
+	    neighbor = nothing
+	    try
+	        thing = convert(Array, 1:n_neighbors)
+		neighbor = StatsBase.sample(thing)
+            catch e
+                info(string(n_neighbors))
+		rethrow(e)
+            end
 
             difs = X[k_nns[neighbor], :] - X[i, :]
             X_new[(i - 1) * n_obs + l, :] = X[i, :] + rand() * difs
