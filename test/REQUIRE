@@ -3,5 +3,4 @@ DataFrames 0.11
 DataArrays
 Distributions
 GLM
-RCall
 StatsBase
