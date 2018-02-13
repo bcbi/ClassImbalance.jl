@@ -2,5 +2,6 @@ julia 0.6
 DataFrames 0.11
 DataArrays
 Distributions
+RCall
 GLM
 StatsBase
