@@ -6,6 +6,8 @@
 
 [![codecov.io](http://codecov.io/github/paulstey/ClassImbalance.jl/coverage.svg?branch=master)](http://codecov.io/github/paulstey/ClassImbalance.jl?branch=master)
 
+## Description
+This is a package that implements some sampling-based methods of correcting for class imbalance in two-category classification problems. Portions of the SMOTE and ROSE algorithm are adaptations of the excellent R packages DMwR and ROSE.
 
 ## Installation
 ```julia
