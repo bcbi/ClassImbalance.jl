@@ -1,10 +1,10 @@
 # ClassImbalance
 
-[![Build Status](https://travis-ci.org/paulstey/ClassImbalance.jl.svg?branch=master)](https://travis-ci.org/paulstey/ClassImbalance.jl)
+[![Build Status](https://travis-ci.org/bcbi/ClassImbalance.jl.svg?branch=master)](https://travis-ci.org/bcbi/ClassImbalance.jl)
 
-[![Coverage Status](https://coveralls.io/repos/paulstey/ClassImbalance.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/paulstey/ClassImbalance.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/bcbi/ClassImbalance.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/bcbi/ClassImbalance.jl?branch=master)
 
-[![codecov.io](http://codecov.io/github/paulstey/ClassImbalance.jl/coverage.svg?branch=master)](http://codecov.io/github/paulstey/ClassImbalance.jl?branch=master)
+[![codecov.io](http://codecov.io/github/bcbi/ClassImbalance.jl/coverage.svg?branch=master)](http://codecov.io/github/bcbi/ClassImbalance.jl?branch=master)
 
 ## Description
 This is a package that implements some sampling-based methods of correcting for class imbalance in two-category classification problems. Portions of the SMOTE and ROSE algorithm are adaptations of the excellent R packages DMwR and ROSE.
