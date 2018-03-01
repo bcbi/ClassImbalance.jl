@@ -45,6 +45,11 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
+        if ( !require("DMwR") ) {
+            install.packages("DMwR", repos = "https://cran.r-project.org/")
+        }
+    """
+    RCall.R"""
         library(DMwR)
         X <- matrix(rnorm(n*10), ncol = 10)
         X <- cbind(1, X)
