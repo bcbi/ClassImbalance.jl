@@ -45,9 +45,9 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
-        print("INFO: Attempting to create local user library")
+        print("INFO: Attempting to create local user library", Sys.getenv("R_LIBS_USER"))
         dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
-        print("INFO: Created local user library")
+        print("INFO: Created local user library: ", Sys.getenv("R_LIBS_USER"))
         #
         if ( !require("DMwR", lib.loc = Sys.getenv("R_LIBS_USER")) ) {
             print("INFO: Attempting to install DMwR package to local user library")
