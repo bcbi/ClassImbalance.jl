@@ -45,23 +45,31 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
-        print("INFO: Attempting to create local user library", Sys.getenv("R_LIBS_USER"))
-        dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
-        print("INFO: Created local user library: ", Sys.getenv("R_LIBS_USER"))
+	mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
+        print(c("INFO: Attempting to create local user library: ", mylocaluserlib))
+        dir.create(path = mylocaluserlib, showWarnings = FALSE, recursive = TRUE)
+        if (dir.exists(mylocaluserlib)) {
+            print(c("INFO: Created local user library: ", mylocaluserlib))
+	} else {
+            print("WARNING: something went wrong when trying to create local user library")
+	}
         #
-        if ( !require("DMwR", lib.loc = Sys.getenv("R_LIBS_USER")) ) {
+        #
+        if ( !require("DMwR", lib.loc = mylocaluserlib) ) {
             print("INFO: Attempting to install DMwR package to local user library")
-            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.r-project.org/")
+            install.packages("DMwR", lib = mylocaluserlib, repos = "https://cran.r-project.org/")
             print("INFO: Installed DMwR package to local user library")
         }
     """
     RCall.R"""
+        mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
         print("INFO: Attempting to load DMwR package from local user library")
-        library("DMwR", lib.loc = Sys.getenv("R_LIBS_USER"))
+        library("DMwR", lib.loc = mylocaluserlib)
         print("INFO: Loaded DMwR package from local user library")
     """
     RCall.R"""
-        library("DMwR", lib.loc = Sys.getenv("R_LIBS_USER"))
+        mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
+        library("DMwR", lib.loc = mylocaluserlib)
         X <- matrix(rnorm(n*10), ncol = 10)
         X <- cbind(1, X)
         dat <- data.frame(X)
