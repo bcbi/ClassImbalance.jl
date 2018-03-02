@@ -45,7 +45,14 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
-        library(DMwR)
+        dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+        .libPaths(Sys.getenv("R_LIBS_USER"))
+        if ( !require("DMwR") ) {
+            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "http://cran.r-project.org/")
+        }
+    """
+    RCall.R"""
+        library("DMwR")
         X <- matrix(rnorm(n*10), ncol = 10)
         X <- cbind(1, X)
         dat <- data.frame(X)
