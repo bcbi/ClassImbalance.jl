@@ -45,12 +45,20 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
-        # create local user library
+        print("INFO: Attempting to create local user library")
         dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+        print("INFO: Created local user library")
+        #
         if ( !require("DMwR", lib.loc = Sys.getenv("R_LIBS_USER")) ) {
-            # if the "DMwR" package is not installed, install it to the local user library
+            print("INFO: Attempting to install DMwR package to local user library")
             install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"), repos = "https://cran.r-project.org/")
+            print("INFO: Installed DMwR package to local user library")
         }
+    """
+    RCall.R"""
+        print("INFO: Attempting to load DMwR package from local user library")
+        library("DMwR", lib.loc = Sys.getenv("R_LIBS_USER"))
+        print("INFO: Loaded DMwR package from local user library")
     """
     RCall.R"""
         library("DMwR", lib.loc = Sys.getenv("R_LIBS_USER"))
