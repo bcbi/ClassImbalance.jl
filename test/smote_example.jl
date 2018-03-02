@@ -45,31 +45,22 @@ function smote_counts_r(sim_conditions)
     RCall.@rput n_minority
     RCall.@rput n_majority
     RCall.R"""
-	mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
-        print(c("INFO: Attempting to create local user library: ", mylocaluserlib))
-        dir.create(path = mylocaluserlib, showWarnings = FALSE, recursive = TRUE)
-        if (dir.exists(mylocaluserlib)) {
-            print(c("INFO: Created local user library: ", mylocaluserlib))
-	} else {
-            print("WARNING: something went wrong when trying to create local user library")
-	}
-        #
-        #
-        if ( !require("DMwR", lib.loc = mylocaluserlib) ) {
-            print("INFO: Attempting to install DMwR package to local user library")
-            install.packages("DMwR", lib = mylocaluserlib, repos = "https://cran.r-project.org/")
-            print("INFO: Installed DMwR package to local user library")
+        print(sprintf("R_LIBS_USER = %s", Sys.getenv("R_LIBS_USER")))
+        dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+        .libPaths(Sys.getenv("R_LIBS_USER"))
+        if ( !require("DMwR") ) {
+            print("INFO: Attempting to install DMwR package")
+            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "https://cran.r-project.org/")
+            print("INFO: Installed DMwR package")
         }
     """
     RCall.R"""
-        mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
-        print("INFO: Attempting to load DMwR package from local user library")
-        library("DMwR", lib.loc = mylocaluserlib)
-        print("INFO: Loaded DMwR package from local user library")
+        print("INFO: Attempting to load DMwR package")
+        library("DMwR")
+        print("INFO: Loaded DMwR package")
     """
     RCall.R"""
-        mylocaluserlib = "~/ClassImbalancetests/Rlocaluserlib/"
-        library("DMwR", lib.loc = mylocaluserlib)
+        library("DMwR")
         X <- matrix(rnorm(n*10), ncol = 10)
         X <- cbind(1, X)
         dat <- data.frame(X)

@@ -1,6 +1,5 @@
 import Base.Test
 import ClassImbalance
-import RCall
 
 srand(999) # seed the global random number generator
 
