@@ -48,7 +48,7 @@ function smote_counts_r(sim_conditions)
         dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
         .libPaths(Sys.getenv("R_LIBS_USER"))
         if ( !require("DMwR") ) {
-            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "https://cran.r-project.org/")
+            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "http://cran.r-project.org/")
         }
     """
     RCall.R"""
