@@ -48,13 +48,9 @@ function smote_counts_r(sim_conditions)
         print(sprintf("R_LIBS_USER = %s", Sys.getenv("R_LIBS_USER")))
         dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
         .libPaths(Sys.getenv("R_LIBS_USER"))
-        if ( !require("DMwR") ) {
-            print("INFO: Attempting to install DMwR package")
-            install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "https://cran.r-project.org/")
-            print("INFO: Installed DMwR package")
-        }
-    """
-    RCall.R"""
+        print("INFO: Attempting to install DMwR package")
+        install.packages("DMwR", lib = Sys.getenv("R_LIBS_USER"),repos = "https://cran.r-project.org/")
+        print("INFO: Installed DMwR package")
         print("INFO: Attempting to load DMwR package")
         library("DMwR")
         print("INFO: Loaded DMwR package")
