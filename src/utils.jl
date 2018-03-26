@@ -38,9 +38,9 @@ end
 
 function float_to_factor(v::T, levels::S) where T <: AbstractArray where S <: AbstractVector
     sort!(levels)
-    str_vect = map(x -> levels[round(Int, x)], v)
-    res = DataArray(str_vect)
-    res
+    str_vect = map(x -> levels[convert(Int, x)], v)
+    result = Array(str_vect)
+    return result
 end
 
 # This function behaves a bit like R's scale()

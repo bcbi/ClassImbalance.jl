@@ -20,12 +20,12 @@ end
 
 
 # Convert matrix to DataFrames.DataFrame or DataTable object
-function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrames.DataFrames.DataFrames.DataFrame, factor_indcs::Array{Int, 1})
+function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrames.DataFrame, factor_indcs::Array{Int, 1})
     X_synth = DataFrames.DataFrames.DataFrames.DataFrame()
     p = size(X_new, 2)
     for j = 1:p
         if j ∈ factor_indcs
-            X_synth[:, j] = float_to_factor(X_new[:, j], levels(dat[:, j]))
+            X_synth[:, j] = float_to_factor(X_new[:, j], DataFrames.levels(dat[:, j]))
         else
             X_synth[:, j] = X_new[:, j]
         end
