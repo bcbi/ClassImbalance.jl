@@ -24,48 +24,48 @@ end
 
 function rose_real(X, n, ids_class, ids_generation, h_mult = 1)
     p = size(X, 2)
-	n_new = length(ids_generation)
-	cons_kernel = (4/((p+2) * n))^(1/(p+4))
+    n_new = length(ids_generation)
+    cons_kernel = (4/((p+2) * n))^(1/(p+4))
 
-		if p ≠ 1
-            sd_mat = eye(p)
-            sd_vect = std(X[ids_class, :], 2)
-            fill_diagonal!(sd_mat, sd_vect)
-			H = h_mult * cons_kernel * sd_mat
-		else
-			H = h_mult * cons_kernel * std(X[ids_class, :])
+    if p ≠ 1
+        sd_mat = eye(p)
+        sd_vect = std(X[ids_class, :], 2)
+        fill_diagonal!(sd_mat, sd_vect)
+		       H = h_mult * cons_kernel * sd_mat
+	else
+	    H = h_mult * cons_kernel * std(X[ids_class, :])
         end
-	X_new_num = randn(n_new, p) * H
-	Xnew_num = Xnew_num + X[ids_generation, :]
-	Xnew_num
+    X_new_num = randn(n_new, p) * H
+    Xnew_num = Xnew_num + X[ids_generation, :]
+    Xnew_num
 end
 
 
 function rose_sampling(X, y, prop, indcs_maj, indcs_min, y_majority, y_minority, h_mult_maj, h_mult_min)
     n = size(X, 1)
     n_minority = sum(rand(Binomial(1, prop), n))
-	n_majority = n - n_minority
+    n_majority = n - n_minority
 
-	indcs_maj_new = StatsBase.sample(indcs_maj, n_majority, replace = true)
-	indcs_min_new = StatsBase.sample(indcs_min, n_minority, replace = true)
+    indcs_maj_new = StatsBase.sample(indcs_maj, n_majority, replace = true)
+    indcs_min_new = StatsBase.sample(indcs_min, n_minority, replace = true)
 
-	numeric_cols = numeric_columns(X)
+    numeric_cols = numeric_columns(X)
 
-	# Create  X
+    # Create  X
     indcs = vcat(indcs_maj_new, indcs_min_new)
-	X_new = X[indcs, :]
+    X_new = X[indcs, :]
     if length(numeric_cols) > 0
         X_new[1:n_majority, numeric_cols] = rose_real(X[:, numeric_cols], length(indcs_maj), indcs_maj, indcs_maj_new, h_mult_maj)
         X_new[(n_majority + 1):n, numeric_cols] = rose_real(X[:, numeric_cols], length(indcs_min), indcs_min, indcs_min_new, h_mult_min)
     end
 
-	# Create y
+    # Create y
     y_new = similar(y)
     y_new[1:n_majority] = y_majority
     y_new[(n_majority + 1):n] = y_minority
 
-	res = (X_new, y_new)
-	res
+    res = (X_new, y_new)
+    res
 end
 
 
