@@ -1,17 +1,29 @@
-import Base.Test
 import ClassImbalance
+import Random
+import Test
 
-srand(999) # seed the global random number generator
+Random.seed!(999) # seed the global random number generator
 
-Base.Test.@testset "All Tests" begin
-    Base.Test.@testset "miscellaneous.jl" begin
-        include("miscellaneous.jl")
-    end
-    Base.Test.@testset "smote_example.jl" begin
-        include("smote_example.jl")
-    end
-    Base.Test.@testset "test_utils.jl" begin
-        include("test_utils.jl")
-    end
+include("install_r.jl")
+
+include("install_dmwr.jl")
+
+Test.@testset "miscellaneous.jl" begin
+    include("miscellaneous.jl")
 end
 
+Test.@testset "smote_example.jl" begin
+    include("smote_example.jl")
+end
+
+Test.@testset "test_rose.jl" begin
+    include("test_rose.jl")
+end
+
+Test.@testset "test_smote_exs.jl" begin
+    include("test_smote_exs.jl")
+end
+
+Test.@testset "test_utils.jl" begin
+    include("test_utils.jl")
+end

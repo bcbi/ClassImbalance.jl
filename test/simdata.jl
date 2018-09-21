@@ -1,7 +1,7 @@
-# SimData
 import Distributions
 import DataFrames
 import GLM
+import Random
 import StatsBase
 
 n = 500
@@ -22,8 +22,8 @@ df[:y] = y
 
 # keep only a sub-sample of positive cases
 keep_prop = 0.05
-pos_cases = find(y .== 1)
-keep_indcs = vcat(StatsBase.sample(pos_cases, Int(round(2 * keep_prop * length(pos_cases)))), find(y .== 0))
+pos_cases = findall(y .== 1)
+keep_indcs = vcat(StatsBase.sample(pos_cases, Int(round(2 * keep_prop * length(pos_cases)))), findall(y .== 0))
 df2 = df[keep_indcs, :]
 
 sum(df2[:y])/n
@@ -53,7 +53,7 @@ p = 10
 
 mvn = MvNormal(ones(p), Σ)
 
-srand(round(Int, time()))
+Random.seed!(round(Int, time()))
 
 X = rand(mvn, n)'
 cor(X)

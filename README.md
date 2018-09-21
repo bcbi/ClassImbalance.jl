@@ -1,26 +1,43 @@
-# ClassImbalance
+# ClassImbalance.jl
 
-[![Build Status](https://travis-ci.org/bcbi/ClassImbalance.jl.svg?branch=master)](https://travis-ci.org/bcbi/ClassImbalance.jl)
-
-[![Coverage Status](https://coveralls.io/repos/bcbi/ClassImbalance.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/bcbi/ClassImbalance.jl?branch=master)
-
-[![codecov.io](http://codecov.io/github/bcbi/ClassImbalance.jl/coverage.svg?branch=master)](http://codecov.io/github/bcbi/ClassImbalance.jl?branch=master)
+<table>
+    <tbody>
+        <tr>
+            <td>Repository status</td>
+            <td><a href="https://www.repostatus.org/#active"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed." /></a></td>
+        </tr>
+        <tr>
+            <td>Travis CI</td>
+            <td><a href="https://travis-ci.org/bcbi/ClassImbalance.jl/branches">
+            <img
+            src="https://travis-ci.org/bcbi/ClassImbalance.jl.svg?branch=master"
+            /></a></td>
+        </tr>
+        <tr>
+            <td>CodeCov</td>
+            <td><a
+            href="https://codecov.io/gh/bcbi/ClassImbalance.jl/branch/master">
+            <img
+            src="https://codecov.io/gh/bcbi/ClassImbalance.jl/branch/master/graph/badge.svg"
+            /></a></td>
+        </tr>
+    </tbody>
+</table>
 
 ## Description
+
 This is a package that implements some sampling-based methods of correcting for class imbalance in two-category classification problems. Portions of the SMOTE and ROSE algorithm are adaptations of the excellent R packages DMwR and ROSE.
 
 ## Installation
 ```julia
-julia> Pkg.clone("https://github.com/bcbi/ClassImbalance.jl.git")
+import Pkg;
+Pkg.add("ClassImbalance")
 ```
 
 ## SMOTE Example
 ```julia
-julia> using ClassImbalance
-
-julia> y = vcat(zeros(20), ones(180))
-
-julia> X = hcat(rand(200, 10), y)
-
-julia> X2, y2 = smote(X, y, k = 5, pct_under = 100, pct_over = 200)
+import ClassImbalance;
+y = vcat(zeros(20), ones(180));
+X = hcat(rand(200, 10), y);
+X2, y2 = smote(X, y, k = 5, pct_under = 100, pct_over = 200)
 ```
