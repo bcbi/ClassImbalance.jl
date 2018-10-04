@@ -1,0 +1,33 @@
+name = "ClassImbalance"
+uuid = "04a18a73-7590-580c-b363-eeca0919eb2a"
+authors = [
+    "Paul Stey <paulstey@gmail.com>",
+    "Dilum Aluthge <dilum@aluthge.com>",
+]
+version = "0.3.0-DEV"
+
+[compat]
+julia = "^0.7.0"
+
+[deps]
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
+[extras]
+Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = [
+    "Conda",
+    "GLM",
+    "Pkg",
+    "Test",
+]

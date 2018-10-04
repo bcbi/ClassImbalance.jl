@@ -1,8 +1,9 @@
+import Random
 import StatsBase
 
 function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
-    minority_indcs = find(y .== one(typ))
+    minority_indcs = findall(y .== one(typ))
     n, p = size(X)
 
     X_synthetic = smote_obs(X[minority_indcs, :], pct_over, k)
@@ -22,7 +23,7 @@ function _smote(X::Array, y, k = 5, pct_over = 200, pct_under = 200)
     y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic))
 
     n_new = size(X_new, 1)
-    indcs = shuffle(1:n_new)
+    indcs = Random.shuffle(1:n_new)
     X_new = X_new[indcs, :]
     y_new = y_new[indcs]
     return (X_new, y_new)
@@ -31,7 +32,7 @@ end
 
 function _smote(X::DataFrames.DataFrame, y, k = 5, pct_over = 200, pct_under = 200)
     typ = eltype(y)
-    minority_indcs = find(y .== one(typ))
+    minority_indcs = findall(y .== one(typ))
     n, p = size(X)
 
     X_synthetic = smote_obs(X[minority_indcs, :], pct_over, k, names(X))
@@ -51,7 +52,7 @@ function _smote(X::DataFrames.DataFrame, y, k = 5, pct_over = 200, pct_under = 2
     y_new = vcat(y[sel_majority], y[minority_indcs], ones(typ, n_synthetic))
 
     n_new = size(X_new, 1)
-    indcs = shuffle(1:n_new)
+    indcs = Random.shuffle(1:n_new)
     X_new = X_new[indcs, :]
     y_new = y_new[indcs]
     return (X_new, y_new)

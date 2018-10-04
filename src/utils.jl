@@ -10,7 +10,7 @@ function factor_columns(dat)
             is_factor[j] = true
         end
     end
-    indcs = find(is_factor)
+    indcs = findall(is_factor)
 
     indcs
 end
