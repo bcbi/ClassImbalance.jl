@@ -4,6 +4,9 @@
 
 set -ev
 
+# Remove the following line after we add the Project.toml file
+julia --check-bounds=yes --color=yes -e 'import Pkg; Pkg.clone(pwd());'
+
 julia --check-bounds=yes --color=yes -e '
     import Pkg;
     Pkg.build("ClassImbalance");
@@ -30,8 +33,8 @@ julia --check-bounds=yes --color=yes -e '
     Coverage.Codecov.submit(Coverage.Codecov.process_folder());
     '
 
-cat Project.toml
+# cat Project.toml
 
-cat Manifest.toml
+# cat Manifest.toml
 
 ##### End of file
