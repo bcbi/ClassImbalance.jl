@@ -33,8 +33,4 @@ julia --check-bounds=yes --color=yes -e '
     Coverage.Codecov.submit(Coverage.Codecov.process_folder());
     '
 
-# cat Project.toml
-
-# cat Manifest.toml
-
 ##### End of file
