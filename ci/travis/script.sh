@@ -4,7 +4,7 @@
 
 set -ev
 
-# Remove the following line after we add the Project.toml file
+# TODO: Remove the following line after we add the Project.toml file
 julia --check-bounds=yes --color=yes -e 'import Pkg; Pkg.clone(pwd());'
 
 julia --check-bounds=yes --color=yes -e '
