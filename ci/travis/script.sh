@@ -4,33 +4,44 @@
 
 set -ev
 
-# Remove the following line after we add the Project.toml file
-julia --check-bounds=yes --color=yes -e 'import Pkg; Pkg.clone(pwd());'
+export COMPILED_MODULES=$COMP_MODS
+echo "COMPILED_MODULES=$COMPILED_MODULES"
 
-julia --check-bounds=yes --color=yes -e '
+export JULIA_FLAGS="--check-bounds=yes --code-coverage=all --color=yes --compiled-modules=$COMPILED_MODULES --inline=no"
+echo "JULIA_FLAGS=$JULIA_FLAGS"
+
+export JULIA_PROJECT=@.
+
+cat Project.toml
+cat Manifest.toml
+
+julia $JULIA_FLAGS -e '
     import Pkg;
     Pkg.build("ClassImbalance");
     '
 
-julia --check-bounds=yes --color=yes -e '
+julia $JULIA_FLAGS -e '
     import ClassImbalance;
     '
 
-julia --check-bounds=yes --color=yes -e '
+julia $JULIA_FLAGS -e '
     import Pkg;
     Pkg.test("ClassImbalance"; coverage=true);
     '
 
-julia --check-bounds=yes --color=yes -e '
+julia $JULIA_FLAGS -e '
     import Pkg;
     try Pkg.add("Coverage") catch end;
     '
 
-julia --check-bounds=yes --color=yes -e '
+julia $JULIA_FLAGS -e '
     import Coverage;
     import ClassImbalance;
     cd(normpath(joinpath(pathof(ClassImbalance), "..", "..")));
     Coverage.Codecov.submit(Coverage.Codecov.process_folder());
     '
+
+cat Project.toml
+cat Manifest.toml
 
 ##### End of file
