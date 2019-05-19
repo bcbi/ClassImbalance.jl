@@ -4,8 +4,8 @@
 
 set -ev
 
-cat Project.toml
-cat Manifest.toml
+cat Project.toml || echo "Project.toml: No such file or directory"
+cat Manifest.toml || echo "Manifest.toml: No such file or directory"
 
 julia --check-bounds=yes --color=yes -e '
     import Pkg;
