@@ -1,5 +1,14 @@
 ##### Beginning of file
 
+branches:
+    only:
+    - develop
+    - master
+    - staging
+    - trying
+    - /^release\/.*$/ # release branches
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
+
 env:
     global:
         - JULIA_DEBUG="all"
@@ -10,13 +19,12 @@ git:
 julia:
     - "0.7"
     - "1.0"
-    - "nightly"
+    - "1.1"
 
 language: julia
 
 matrix:
     allow_failures:
-        - julia: "1.0"
         - julia: "nightly"
     fast_finish: true
 
