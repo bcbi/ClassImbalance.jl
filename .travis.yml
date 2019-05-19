@@ -26,6 +26,7 @@ language: julia
 matrix:
     allow_failures:
         - julia: "nightly"
+        - os: osx
     fast_finish: true
 
 notifications:
