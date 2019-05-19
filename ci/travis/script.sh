@@ -4,8 +4,8 @@
 
 set -ev
 
-# Remove the following line after we add the Project.toml file
-julia --check-bounds=yes --color=yes -e 'import Pkg; Pkg.clone(pwd());'
+cat Project.toml || echo "Project.toml: No such file or directory"
+cat Manifest.toml || echo "Manifest.toml: No such file or directory"
 
 julia --check-bounds=yes --color=yes -e '
     import Pkg;
@@ -32,5 +32,8 @@ julia --check-bounds=yes --color=yes -e '
     cd(normpath(joinpath(pathof(ClassImbalance), "..", "..")));
     Coverage.Codecov.submit(Coverage.Codecov.process_folder());
     '
+
+cat Project.toml
+cat Manifest.toml
 
 ##### End of file
