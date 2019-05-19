@@ -29,8 +29,10 @@
 This is a package that implements some sampling-based methods of correcting for class imbalance in two-category classification problems. Portions of the SMOTE and ROSE algorithm are adaptations of the excellent R packages DMwR and ROSE.
 
 ## Installation
+
+To install ClassImbalance, open Julia and run the following two lines:
 ```julia
-import Pkg;
+import Pkg
 Pkg.add("ClassImbalance")
 ```
 
