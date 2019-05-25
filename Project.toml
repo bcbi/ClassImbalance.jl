@@ -1,7 +1,7 @@
 name = "ClassImbalance"
 uuid = "04a18a73-7590-580c-b363-eeca0919eb2a"
 authors = ["Paul Stey <paulstey@gmail.com>", "Dilum Aluthge <dilum@aluthge.com>", "Brown Center for Biomedical Informatics <bcbi@brown.edu>",]
-version = "0.5.0"
+version = "0.6.0-DEV"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
