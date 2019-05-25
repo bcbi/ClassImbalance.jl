@@ -1,0 +1,17 @@
+docs_url:         https://github.com/bcbi/ClassImbalance.jl
+
+maintainers:
+    - name: Paul Stey
+      github_user: paulstey
+    - name: Dilum Aluthge
+      github_user: DilumAluthge
+
+repo:             ClassImbalance.jl
+
+repo_url:         https://github.com/bcbi/ClassImbalance.jl
+
+site_name:        ClassImbalance.jl
+
+site_description: Sampling-based methods for correcting for class imbalance in two-category classification problems.
+
+type:             software
