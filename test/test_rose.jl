@@ -36,3 +36,7 @@ Test.@test_throws(
     ErrorException,
     ClassImbalance.classlabel([0,0,0,0,1,1,1,1,2,2,2,2,]),
     )
+
+Test.@test(
+    ClassImbalance.ncol([1 2 3 4; 5 6 7 8;]) == 4
+    )
