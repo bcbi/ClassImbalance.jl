@@ -31,8 +31,8 @@ X_smote_obs_result = ClassImbalance.smote_obs(X, 300, 0)
 
 w1 = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 Test.@test(
-    cases_needed(w1) == 3
+    ClassImbalance.cases_needed(w1) == 3
     )
 Test.@test(
-    pct_needed(w1) == 100.0
+    ClassImbalance.pct_needed(w1) == 100.0
     )
