@@ -28,3 +28,11 @@ x3 = randn(num_rows)
 X = hcat(x1, x2, x3)
 X_smote_obs_result = ClassImbalance.smote_obs(X, 0.01, 0)
 X_smote_obs_result = ClassImbalance.smote_obs(X, 300, 0)
+
+w1 = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+Test.@test(
+    ClassImbalance.cases_needed(w1) == 3
+    )
+Test.@test(
+    ClassImbalance.pct_needed(w1) == 100.0
+    )
