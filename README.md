@@ -21,6 +21,13 @@
             src="https://codecov.io/gh/bcbi/ClassImbalance.jl/branch/master/graph/badge.svg"
             /></a></td>
         </tr>
+        <tr>
+            <td>Zenodo DOI</td>
+            <td><a
+            href="https://doi.org/10.5281/zenodo.3233061">
+            <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3233061.svg"
+            alt="DOI"></a></td>
+        </tr>
     </tbody>
 </table>
 

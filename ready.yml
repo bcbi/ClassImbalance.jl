@@ -1,5 +1,7 @@
 docs_url:         https://github.com/bcbi/ClassImbalance.jl
 
+doi:              "10.5281/zenodo.3229414"
+
 maintainers:
     - name: Paul Stey
       github_user: paulstey
