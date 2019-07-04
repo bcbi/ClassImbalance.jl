@@ -10,10 +10,12 @@ alt="DOI">
 </p>
 
 <p>
-<a href="https://app.bors.tech/repositories/12287">
+<a
+href="https://app.bors.tech/repositories/12287">
 <img
 src="https://bors.tech/images/badge_small.svg"
-/></a>
+alt="Bors enabled">
+</a>
 <a
 href="https://travis-ci.org/bcbi/ClassImbalance.jl/branches">
 <img
