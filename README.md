@@ -43,7 +43,7 @@ Pkg.add("ClassImbalance")
 ## SMOTE Example
 ```julia
 import ClassImbalance;
-y = vcat(zeros(20), ones(180));
+y = vcat(ones(20), zeros(180)); # 0 = majority, 1 = minority
 X = hcat(rand(200, 10), y);
 X2, y2 = smote(X, y, k = 5, pct_under = 100, pct_over = 200)
 ```
