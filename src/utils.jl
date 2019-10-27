@@ -1,3 +1,7 @@
+# Some of the code in this file is taken from PredictMD:
+# https://github.com/bcbi/PredictMD.jl
+# https://predictmd.net
+
 import DataFrames
 
 const RealOrMissing = Union{DataFrames.Missing, T} where T<:Real
@@ -63,6 +67,10 @@ function column_ranges(X::T) where T <: AbstractMatrix
     end
     ranges
 end
+
+# The `calculate_smote_pct_under` function is taken from PredictMD:
+# https://github.com/bcbi/PredictMD.jl
+# https://predictmd.net
 
 function calculate_smote_pct_under(
         ;
