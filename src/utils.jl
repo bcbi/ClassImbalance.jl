@@ -17,7 +17,6 @@ end
 
 # @code_warntype factor_columns(d)
 
-
 function factor_to_float(v::T) where T <: AbstractArray
     unique_cats = unique(v)         # unique categories
     sort!(unique_cats)
@@ -34,7 +33,6 @@ function factor_to_float(v::T) where T <: AbstractArray
     end
     res
 end
-
 
 function float_to_factor(v::T, levels::S) where T <: AbstractArray where S <: AbstractVector
     sort!(levels)
@@ -56,7 +54,6 @@ function rscale(X, center, scale)
     res
 end
 
-
 function column_ranges(X::T) where T <: AbstractMatrix
     p = size(X, 2)
     ranges = zeros(p)
@@ -65,4 +62,19 @@ function column_ranges(X::T) where T <: AbstractMatrix
 	ranges[j] = maximum(X[:, j]) - minimum(X[:, j])
     end
     ranges
+end
+
+function calculate_smote_pct_under(
+        ;
+        pct_over::Real = 0,
+        minority_to_majority_ratio::Real = 0,
+        )
+    if pct_over < 0
+        error("pct_over must be >=0")
+    end
+    if minority_to_majority_ratio <= 0
+        error("minority_to_majority_ratio must be >0")
+    end
+    result = 100*minority_to_majority_ratio*(100+pct_over)/pct_over
+    return result
 end
