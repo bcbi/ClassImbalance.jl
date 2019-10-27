@@ -11,3 +11,7 @@ a = ["a", "b", "a"]
 b = ClassImbalance.factor_to_float(a)
 c = ClassImbalance.float_to_factor(b, ["a", "b"])
 Test.@test(all(a .== c))
+
+Test.@test ClassImbalance.calculate_smote_pct_under(; pct_over = 200, minority_to_majority_ratio = 1) == 150
+Test.@test_throws ErrorException ClassImbalance.calculate_smote_pct_under(; pct_over = -1, minority_to_majority_ratio = 1)
+Test.@test_throws ErrorException ClassImbalance.calculate_smote_pct_under(; pct_over = 1, minority_to_majority_ratio = 0)
