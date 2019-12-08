@@ -16,7 +16,6 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Compat = "2"
 DataFrames = "0.20"
 Distributions = "0.21.3"
-RCall = "0.13.4"
 StatsBase = "0.32"
 julia = "1.1"
 
