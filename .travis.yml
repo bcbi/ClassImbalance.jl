@@ -11,6 +11,7 @@ branches:
 env:
     global:
         - JULIA_DEBUG="all"
+        - R_HOME="*"
 
 git:
     depth: 99999999
