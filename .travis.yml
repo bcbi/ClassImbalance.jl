@@ -18,13 +18,14 @@ git:
 
 julia:
     - "1"
-    - "nightly"
+    - nightly
 
 language: julia
 
 matrix:
     allow_failures:
-        # - julia: "nightly"
+        # - julia: "1"
+        # - julia: nightly
         # - os: osx
     fast_finish: true
 
