@@ -24,7 +24,7 @@ language: julia
 
 matrix:
     allow_failures:
-        # - julia: "1"
+        - julia: "1"
         # - julia: nightly
         # - os: osx
     fast_finish: true
