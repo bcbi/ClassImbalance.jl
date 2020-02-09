@@ -1,7 +1,7 @@
 name = "ClassImbalance"
 uuid = "04a18a73-7590-580c-b363-eeca0919eb2a"
 authors = ["Paul Stey <paulstey@gmail.com>", "Dilum Aluthge <dilum@aluthge.com>", "Brown Center for Biomedical Informatics <bcbi@brown.edu>"]
-version = "0.8.6"
+version = "0.8.7"
 
 [deps]
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
