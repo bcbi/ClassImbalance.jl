@@ -23,9 +23,10 @@ function matrix_to_dataframe(X_new::Array{Float64, 2}, dat::DataFrames.DataFrame
     p = size(X_new, 2)
     for j = 1:p
         if j ∈ factor_indcs
-            X_synth[:, j] = float_to_factor(X_new[:, j], DataFrames.levels(dat[:, j]))
+            X_synth[:, Symbol(:x, j)] = float_to_factor(X_new[:, j],
+                                            DataFrames.levels(dat[:, j]))
         else
-            X_synth[:, j] = X_new[:, j]
+            X_synth[:, Symbol(:x, j)] = X_new[:, j]
         end
     end
     X_synth
@@ -121,7 +122,7 @@ function smote_obs(dat::DataFrames.DataFrame, pct = 200, k = 5, column_names = n
         end
     end
     X_newdf = matrix_to_dataframe(X_new, dat, factor_indcs)
-    DataFrames.names!(X_newdf, column_names)
+    DataFrames.rename!(X_newdf, column_names)
     X_newdf
 end
 

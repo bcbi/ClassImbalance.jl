@@ -39,6 +39,9 @@ function factor_to_float(v::T) where T <: AbstractArray
 end
 
 function float_to_factor(v::T, levels::S) where T <: AbstractArray where S <: AbstractVector
+    if levels == DataFrames.DataFrame()
+        levels = zeros(1,1)
+    end
     sort!(levels)
     str_vect = map(x -> levels[convert(Int, x)], v)
     result = Array(str_vect)
