@@ -2,7 +2,7 @@ __precompile__(true)
 
 module ClassImbalance
 
-export smote, rose
+export smote, rose, random_undersampler
 
 include("utils.jl")
 include("smote_exs.jl")

@@ -90,8 +90,8 @@ end
 function undersampling_strategy!(
         sampling_strategy::String,
         classes::T,
-        classcount::Dict{Any, Int},
-        ) where T <: AbstractVector
+        classcount::Dict{A, S},
+        ) where T <: AbstractVector where S <: Integer where A <: Any
     mincount = minimum(values(classcount))
     maxcount = maximum(values(classcount))
 
@@ -103,4 +103,5 @@ function undersampling_strategy!(
         sampling_strategy = Dict(c => mincount for c in classes if classcount[c] != maxcount)
     elseif sampling_strategy == "all"
         sampling_strategy = Dict(c => mincount for c in classes)
+    end
 end

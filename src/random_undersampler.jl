@@ -1,23 +1,21 @@
-import DataFrames
-import Distributions
-import LinearAlgebra
-import Statistics
-import StatsBase
 import Random
+import StatsBase
+import DataFrames
 import Tables
+import MLUtils
 
 function random_undersampler(
         X,
         y::T;
-        sampling_strategy::Union{AbstractFloat, String, Dict{Any, Int}} = "auto",
-        random_state=nothing
-        ) where T <: AbstractVector
+        sampling_strategy::Union{AbstractFloat, String, Dict{A, S}} = "auto",
+        random_state::Union{Nothing, S} = nothing,
+        replacement::Bool = false
+        ) where T <: AbstractVector where S <: Integer where A <: Any
     # check if X implements getobs
     @assert Tables.istable(X) "$X is not implementing the MLUtils.jl getobs interface"
 
     classes = unique(y)
-    classpos = Dict(c => findall(y .== c) for c in classes)
-    classcount = Dict(c => length(classpos[c]) for c in classes)
+    classcount = Dict(c => count(y .== c) for c in classes)
 
     # checking classes in y
     @assert length(classes) > 1 "$y must have more than one class"
@@ -32,6 +30,25 @@ function random_undersampler(
         @assert all(sampling_strategy[c] <= classcount[c] for c in keys(sampling_strategy)) "sampling_strategy must have values less than or equal to current number of samples for a particular class"
     end
 
-    X_new = DataFrames.DataFrame(X)
-    y_new = copy(y)
+    sampling_strategy = undersampling_strategy!(sampling_strategy, classes, classcount)
+
+    if !isnothing(random_state)
+        rng = Random.MersenneTwister(UInt(random_state))
+    else
+        rng = Random.GLOBAL_RNG
+    end
+
+    undersampled_idx = []
+    for target_class in classes
+        if target_class in keys(sampling_strategy)
+            n_samples = sampling_strategy[target_class]
+            target_class_idx = findall(y .== target_class)
+            target_class_idx_sampled = StatsBase.sample(rng, target_class_idx, n_samples, replace=replacement)
+            append!(undersampled_idx, target_class_idx_sampled)
+        else
+            append!(undersampled_idx, findall(y .== target_class))
+        end
+    end
+
+    return MLUtils.getobs(X, undersampled_idx), MLUtils.getobs(y, undersampled_idx)
 end
