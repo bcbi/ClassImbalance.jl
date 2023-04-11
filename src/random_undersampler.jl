@@ -52,3 +52,18 @@ function random_undersampler(
 
     return MLUtils.getobs(X, undersampled_idx), MLUtils.getobs(y, undersampled_idx)
 end
+
+function random_undersampler(
+        df,
+        label::Union{Symbol, String, S};
+        sampling_strategy::Union{AbstractFloat, String, Dict{A, S}} = "auto",
+        random_state::Union{Nothing, S} = nothing,
+        replacement::Bool = false
+        ) where S <: Integer where A <: Any
+    df = DataFrames.DataFrame(df)
+    @assert label in names(df) "label or index $label does not exist in $df"
+
+    Xover, yover = random_undersampler(DataFrames.select(df, DataFrames.Not(label)), df[!, label], sampling_strategy=sampling_strategy, random_state=random_state, replacement=replacement)
+    DataFrames.join(Xover, DataFrames.DataFrame(label = yover))
+    return Xover
+end
