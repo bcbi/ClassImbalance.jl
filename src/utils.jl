@@ -86,3 +86,22 @@ function calculate_smote_pct_under(
     result = 100*minority_to_majority_ratio*(100+pct_over)/pct_over
     return result
 end
+
+function undersampling_strategy!(
+        sampling_strategy::String,
+        classes::T,
+        classcount::Dict{A, S},
+        ) where T <: AbstractVector where S <: Integer where A <: Any
+    mincount = minimum(values(classcount))
+    maxcount = maximum(values(classcount))
+
+    if sampling_strategy == "majority"
+        sampling_strategy = Dict(c => mincount for c in classes if classcount[c] == maxcount)
+    elseif sampling_strategy == "auto" || sampling_strategy == "not minority"
+        sampling_strategy = Dict(c => mincount for c in classes if classcount[c] != mincount)
+    elseif sampling_strategy == "not majority"
+        sampling_strategy = Dict(c => mincount for c in classes if classcount[c] != maxcount)
+    elseif sampling_strategy == "all"
+        sampling_strategy = Dict(c => mincount for c in classes)
+    end
+end
